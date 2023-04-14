@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.web.handler;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +24,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
+@Slf4j
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
     private static final String TIMESTAMP = "timestamp";
     private static final String STATUS = "status";
     private static final String ERROR = "error";
     private static final String PATH = "path";
     private static final String REASONS = "reasons";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ExceptionHandler(value = NotFoundException.class)
     protected ResponseEntity<Object> handleNotFound(NotFoundException ex, WebRequest request) {
-        logger.error("Not found error: {}", ex.getMessage());
+        logger.error("Not found error: " + ex.getMessage());
         Map<String, Object> body = getGeneralErrorBody(HttpStatus.NOT_FOUND, request);
         body.put(REASONS, ex.getMessage());
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
@@ -43,7 +42,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = ConstraintViolationException.class)
     protected ResponseEntity<Object> constraintViolationException(ConstraintViolationException ex, WebRequest request) {
-        logger.error("Constraint error: {}", ex.getMessage());
+        logger.error("Constraint error: " + ex.getMessage());
         Map<String, Object> body = getGeneralErrorBody(HttpStatus.BAD_REQUEST, request);
         List<String> errors = Arrays.stream(ex.getMessage().split(", ")).collect(Collectors.toList());
         body.put(REASONS, errors);
@@ -64,7 +63,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatus status,
                                                                   WebRequest request) {
-        logger.error("Not Valid. Message: {}", ex.getMessage());
+        logger.error("Not Valid. Message: " + ex.getMessage());
         Map<String, Object> body = getGeneralErrorBody(status, request);
         List<String> errors = ex.getBindingResult()
                 .getAllErrors()

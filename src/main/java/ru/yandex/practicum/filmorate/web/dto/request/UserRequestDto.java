@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.web.dto.request;
 
 import lombok.Data;
+import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.web.validator.UserValid;
 
 import javax.validation.constraints.Email;
@@ -22,7 +23,7 @@ public class UserRequestDto {
     private LocalDate birthday;
 
     public void setName(String name) {
-        if (name == null || name.isBlank()) {
+        if (!StringUtils.hasText(name)) {
             this.name = this.login;
         } else {
             this.name = name;
