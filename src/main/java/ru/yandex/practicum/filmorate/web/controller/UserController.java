@@ -2,57 +2,74 @@ package ru.yandex.practicum.filmorate.web.controller;
 
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.web.dto.request.UserRequestDto;
 import ru.yandex.practicum.filmorate.web.dto.response.UserResponseDto;
 import ru.yandex.practicum.filmorate.web.mapper.UserMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private final Map<Integer, User> users = new HashMap<>();
     private final ConversionService conversionService;
     private final UserMapper userMapper;
-    private int currentId = 1;
+    private final UserService userService;
 
-    public UserController(ConversionService conversionService, UserMapper userMapper) {
+    public UserController(ConversionService conversionService, UserMapper userMapper, UserService userService) {
         this.conversionService = conversionService;
         this.userMapper = userMapper;
-    }
-
-    private int getCurrentId() {
-        return currentId++;
+        this.userService = userService;
     }
 
     @GetMapping
-    public Collection<UserResponseDto> findAll() {
+    public Collection<UserResponseDto> getAll() {
 
-        return users.values().stream()
+        return userService.getAll().stream()
                 .map(user -> conversionService.convert(user, UserResponseDto.class))
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/{userId}")
+    public UserResponseDto getById(@PathVariable int userId) {
+        return conversionService.convert(userService.getById(userId), UserResponseDto.class);
+    }
+
     @PostMapping
     public UserResponseDto create(@Valid @RequestBody UserRequestDto userRequestDto) {
-        int id = getCurrentId();
-        userRequestDto.setId(id);
-        users.put(userRequestDto.getId(), userMapper.mapToUser(userRequestDto));
-        return conversionService.convert(users.get(id), UserResponseDto.class);
+        return conversionService.convert(userService.create(userMapper.mapToUser(userRequestDto)), UserResponseDto.class);
     }
 
     @PutMapping
     public UserResponseDto update(@Valid @RequestBody UserRequestDto userRequestDto) {
-        if (!users.containsKey(userRequestDto.getId())) {
-            throw new NotFoundException(String.format("User with id %s not found", userRequestDto.getId()));
-        }
-        users.put(userRequestDto.getId(), userMapper.mapToUser(userRequestDto));
-        return conversionService.convert(users.get(userRequestDto.getId()), UserResponseDto.class);
+        return conversionService.convert(userService.update(userMapper.mapToUser(userRequestDto)), UserResponseDto.class);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public Collection<UserResponseDto> getFriends(@PathVariable int id) {
+        return userService.getFriends(id)
+                .stream()
+                .map(user -> conversionService.convert(user, UserResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public Collection<UserResponseDto> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.getCommonFriends(id, otherId)
+                .stream()
+                .map(user -> conversionService.convert(user, UserResponseDto.class))
+                .collect(Collectors.toList());
     }
 }
