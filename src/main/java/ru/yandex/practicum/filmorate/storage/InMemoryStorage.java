@@ -48,12 +48,4 @@ public abstract class InMemoryStorage<T extends Entity> implements Storage<T> {
     public boolean existsById(int id) {
         return this.entities.containsKey(id);
     }
-
-    @Override
-    public Optional<Integer> validateId(int id) {
-        if (!this.existsById(id)) {
-            return Optional.empty();
-        }
-        return Optional.of(id);
-    }
 }

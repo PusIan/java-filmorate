@@ -47,4 +47,12 @@ public abstract class CrudService<T extends Entity> {
                 .getById(id)
                 .orElseThrow(() -> getNoDataFoundException(id));
     }
+
+    void validateIds(int... entityIds) {
+        for (int entityId : entityIds) {
+            if (!this.getStorage().existsById(entityId)) {
+                throw getNoDataFoundException(entityId);
+            }
+        }
+    }
 }

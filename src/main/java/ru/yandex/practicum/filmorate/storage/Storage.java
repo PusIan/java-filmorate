@@ -15,6 +15,4 @@ public interface Storage<T> {
     Optional<T> getById(int id);
 
     boolean existsById(int id);
-
-    Optional<Integer> validateId(int id);
 }

@@ -5,11 +5,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Storage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService extends CrudService<User> {
@@ -20,57 +16,25 @@ public class UserService extends CrudService<User> {
     }
 
     public void addFriend(int userId, int friendId) {
-        this.userStorage.validateId(userId)
-                .orElseThrow(() -> getNoDataFoundException(userId));
-        this.userStorage.validateId(friendId)
-                .orElseThrow(() -> getNoDataFoundException(friendId));
-        this.userStorage.getById(userId)
-                .get()
-                .getFriends()
-                .add(friendId);
-        this.userStorage.getById(friendId)
-                .get()
-                .getFriends()
-                .add(userId);
+        this.validateIds(userId, friendId);
+        this.userStorage.addFriendLink(userId, friendId);
+        this.userStorage.addFriendLink(friendId, userId);
     }
 
     public void deleteFriend(int userId, int friendId) {
-        this.userStorage.validateId(userId)
-                .orElseThrow(() -> getNoDataFoundException(userId));
-        this.userStorage.validateId(friendId)
-                .orElseThrow(() -> getNoDataFoundException(friendId));
-        this.userStorage.getById(userId)
-                .get()
-                .getFriends()
-                .remove(friendId);
-        this.userStorage.getById(friendId)
-                .get()
-                .getFriends()
-                .remove(userId);
+        this.validateIds(userId, friendId);
+        this.userStorage.deleteFriendLink(userId, friendId);
+        this.userStorage.deleteFriendLink(friendId, userId);
     }
 
     public List<User> getFriends(int userId) {
-        return this.userStorage
-                .getById(userId)
-                .orElseThrow(() -> getNoDataFoundException(userId))
-                .getFriends()
-                .stream()
-                .map(userStorage::getById)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        this.validateIds(userId);
+        return this.userStorage.getFriends(userId);
     }
 
     public List<User> getCommonFriends(int userId, int otherUserId) {
-        Set<Integer> friendsForUser = new HashSet<>(userStorage.getById(userId)
-                .orElseThrow(() -> getNoDataFoundException(userId)).getFriends());
-        Set<Integer> friendsForOtherUser = new HashSet<>(userStorage.getById(otherUserId)
-                .orElseThrow(() -> getNoDataFoundException(otherUserId)).getFriends());
-        return friendsForUser
-                .stream()
-                .filter(friendsForOtherUser::contains)
-                .map(userStorage::getById)
-                .map(Optional::get)
-                .collect(Collectors.toList());
+        this.validateIds(userId, otherUserId);
+        return this.userStorage.getCommonFriends(userId, otherUserId);
     }
 
     @Override
