@@ -34,7 +34,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = NotFoundException.class)
     protected ResponseEntity<Object> handleNotFound(NotFoundException ex, WebRequest request) {
-        logger.error("Not found error: " + ex.getMessage());
+        log.error("Not found error: {}", ex.getMessage());
         Map<String, Object> body = getGeneralErrorBody(HttpStatus.NOT_FOUND, request);
         body.put(REASONS, ex.getMessage());
         return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
@@ -42,7 +42,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(value = ConstraintViolationException.class)
     protected ResponseEntity<Object> constraintViolationException(ConstraintViolationException ex, WebRequest request) {
-        logger.error("Constraint error: " + ex.getMessage());
+        log.error("Constraint error: {}", ex.getMessage());
         Map<String, Object> body = getGeneralErrorBody(HttpStatus.BAD_REQUEST, request);
         List<String> errors = Arrays.stream(ex.getMessage().split(", ")).collect(Collectors.toList());
         body.put(REASONS, errors);
@@ -63,7 +63,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers, HttpStatus status,
                                                                   WebRequest request) {
-        logger.error("Not Valid. Message: " + ex.getMessage());
+        log.error("Not Valid. Message: {}", ex.getMessage());
         Map<String, Object> body = getGeneralErrorBody(status, request);
         List<String> errors = ex.getBindingResult()
                 .getAllErrors()
