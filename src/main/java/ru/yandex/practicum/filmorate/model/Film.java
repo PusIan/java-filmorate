@@ -1,16 +1,21 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.Date;
+import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Film extends Entity {
-    private final Set<Integer> likes = new HashSet<>();
-    private String name;
-    private String description;
-    private LocalDate releaseDate;
-    private Integer duration;
+    Integer id;
+    String name;
+    String description;
+    Date releaseDate;
+    Integer duration;
+    List<Genre> genres;
+    RatingMpa mpa;
 }

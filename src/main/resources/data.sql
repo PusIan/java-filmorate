@@ -1,0 +1,11 @@
+MERGE INTO rating_mpa (id, name) key (id) SELECT 1, 'G' FROM dual;
+MERGE INTO rating_mpa (id, name) key (id) SELECT 2, 'PG' FROM dual;
+MERGE INTO rating_mpa (id, name) key (id) SELECT 3, 'PG-13' FROM dual;
+MERGE INTO rating_mpa (id, name) key (id) SELECT 4, 'R' FROM dual;
+MERGE INTO rating_mpa (id, name) key (id) SELECT 5, 'NC-17' FROM dual;
+MERGE INTO genre (id, name) key (id) SELECT 1, 'Комедия' FROM dual;
+MERGE INTO genre (id, name) key (id) SELECT 2, 'Драма' FROM dual;
+MERGE INTO genre (id, name) key (id) SELECT 3, 'Мультфильм' FROM dual;
+MERGE INTO genre (id, name) key (id) SELECT 4, 'Триллер' FROM dual;
+MERGE INTO genre (id, name) key (id) SELECT 5, 'Документальный' FROM dual;
+MERGE INTO genre (id, name) key (id) SELECT 6, 'Боевик' FROM dual;

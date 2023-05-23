@@ -14,7 +14,7 @@ public class UserToUserResponseDto implements Converter<User, UserResponseDto> {
         userResponseDto.setLogin(user.getLogin());
         userResponseDto.setName(user.getName());
         userResponseDto.setEmail(user.getEmail());
-        userResponseDto.setBirthday(user.getBirthday());
+        userResponseDto.setBirthday(user.getBirthday().toLocalDate());
         return userResponseDto;
     }
 }

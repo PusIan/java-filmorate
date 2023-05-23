@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.web.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -13,16 +15,12 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserController {
     private final ConversionService conversionService;
     private final UserMapper userMapper;
     private final UserService userService;
 
-    public UserController(ConversionService conversionService, UserMapper userMapper, UserService userService) {
-        this.conversionService = conversionService;
-        this.userMapper = userMapper;
-        this.userService = userService;
-    }
 
     @GetMapping
     public Collection<UserResponseDto> getAll() {
