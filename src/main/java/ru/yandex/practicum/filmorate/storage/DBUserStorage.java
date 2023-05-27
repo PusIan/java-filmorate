@@ -38,13 +38,9 @@ public class DBUserStorage implements UserStorage {
 
     @Override
     public Optional<User> update(User entity) {
-        if (this.existsById(entity.getId())) {
-            String sqlQuery = "UPDATE user_ SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
-            jdbcTemplate.update(sqlQuery, entity.getEmail(), entity.getLogin(), entity.getName(), entity.getBirthday(), entity.getId());
-            return this.getById(entity.getId());
-        } else {
-            return Optional.empty();
-        }
+        String sqlQuery = "UPDATE user_ SET email = ?, login = ?, name = ?, birthday = ? WHERE id = ?";
+        jdbcTemplate.update(sqlQuery, entity.getEmail(), entity.getLogin(), entity.getName(), entity.getBirthday(), entity.getId());
+        return this.getById(entity.getId());
     }
 
     @Override
@@ -61,12 +57,10 @@ public class DBUserStorage implements UserStorage {
 
     @Override
     public Optional<User> getById(int id) {
-        if (existsById(id)) {
-            String sqlQuery = "SELECT * FROM user_ WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, new BeanPropertyRowMapper<>(User.class), id));
-        } else {
-            return Optional.empty();
-        }
+        String sqlQuery = "SELECT * FROM user_ WHERE id = ?";
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(User.class), id)
+                .stream()
+                .findFirst();
     }
 
     @Override

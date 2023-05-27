@@ -76,16 +76,12 @@ public class DBFilmStorage implements FilmStorage {
     @Override
     @Transactional
     public Optional<Film> update(Film entity) {
-        if (existsById(entity.getId())) {
-            String sqlQuery = "UPDATE film SET name=?, description=?, release_date=?, duration=?, rating_mpa_id=? " +
-                    "WHERE id = ?";
-            jdbcTemplate.update(sqlQuery, entity.getName(), entity.getDescription(), entity.getReleaseDate(),
-                    entity.getDuration(), entity.getMpa().getId(), entity.getId());
-            this.saveFilmGenre(entity.getId(), entity.getGenres());
-            return this.getById(entity.getId());
-        } else {
-            return Optional.empty();
-        }
+        String sqlQuery = "UPDATE film SET name=?, description=?, release_date=?, duration=?, rating_mpa_id=? " +
+                "WHERE id = ?";
+        jdbcTemplate.update(sqlQuery, entity.getName(), entity.getDescription(), entity.getReleaseDate(),
+                entity.getDuration(), entity.getMpa().getId(), entity.getId());
+        this.saveFilmGenre(entity.getId(), entity.getGenres());
+        return this.getById(entity.getId());
     }
 
     @Override
@@ -102,12 +98,10 @@ public class DBFilmStorage implements FilmStorage {
 
     @Override
     public Optional<Film> getById(int id) {
-        if (existsById(id)) {
-            String sqlQuery = "SELECT * FROM film WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, this::mapRowToFilm, id));
-        } else {
-            return Optional.empty();
-        }
+        String sqlQuery = "SELECT * FROM film WHERE id = ?";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id)
+                .stream()
+                .findFirst();
     }
 
     private void saveFilmGenre(Integer filmId, List<Genre> genreList) {

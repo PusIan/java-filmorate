@@ -23,12 +23,10 @@ public class DBRatingMpaStorage implements RatingMpaStorage {
 
     @Override
     public Optional<RatingMpa> getById(int id) {
-        if (existsById(id)) {
-            String sqlQuery = "select * from rating_mpa WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, new BeanPropertyRowMapper<>(RatingMpa.class), id));
-        } else {
-            return Optional.empty();
-        }
+        String sqlQuery = "select * from rating_mpa WHERE id = ?";
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(RatingMpa.class), id)
+                .stream()
+                .findFirst();
     }
 
     @Override

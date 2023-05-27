@@ -23,12 +23,10 @@ public class DBGenreStorage implements GenreStorage {
 
     @Override
     public Optional<Genre> getById(int id) {
-        if (existsById(id)) {
-            String sqlQuery = "SELECT * FROM genre WHERE id = ?";
-            return Optional.ofNullable(jdbcTemplate.queryForObject(sqlQuery, new BeanPropertyRowMapper<>(Genre.class), id));
-        } else {
-            return Optional.empty();
-        }
+        String sqlQuery = "SELECT * FROM genre WHERE id = ?";
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Genre.class), id)
+                .stream()
+                .findFirst();
     }
 
     @Override

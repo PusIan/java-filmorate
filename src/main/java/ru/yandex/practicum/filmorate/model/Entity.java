@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode
 public class Entity {
-    Integer id;
+    private Integer id;
 }
