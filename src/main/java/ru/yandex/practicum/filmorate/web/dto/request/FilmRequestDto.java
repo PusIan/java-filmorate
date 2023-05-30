@@ -7,10 +7,13 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @FilmValid
 public class FilmRequestDto {
+    protected MpaRequestDto mpa;
+    protected List<GenreRequestDto> genres;
     private Integer id;
     @NotBlank(message = "name can not be blank")
     private String name;

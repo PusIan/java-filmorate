@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.web.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -13,16 +15,11 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmController {
     private final ConversionService conversionService;
     private final FilmMapper filmMapper;
     private final FilmService filmService;
-
-    public FilmController(ConversionService conversionService, FilmMapper filmMapper, FilmService filmService) {
-        this.conversionService = conversionService;
-        this.filmMapper = filmMapper;
-        this.filmService = filmService;
-    }
 
     @GetMapping
     public Collection<FilmResponseDto> getAll() {
@@ -42,7 +39,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public FilmRequestDto update(@Valid @RequestBody FilmRequestDto filmRequestDto) {
+    public FilmResponseDto update(@Valid @RequestBody FilmRequestDto filmRequestDto) {
         return conversionService.convert(filmService.update(filmMapper.mapToFilm(filmRequestDto)), FilmResponseDto.class);
     }
 
