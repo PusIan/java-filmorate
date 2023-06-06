@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Entity;
 import ru.yandex.practicum.filmorate.storage.ReadStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -25,4 +26,5 @@ public abstract class WriteService<T extends Entity> extends ReadService<T> {
                 .update(entity)
                 .orElseThrow(() -> getNoDataFoundException(entity.getId()));
     }
+
 }
