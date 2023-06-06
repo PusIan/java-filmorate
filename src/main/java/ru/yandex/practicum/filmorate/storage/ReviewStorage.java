@@ -10,9 +10,9 @@ public interface ReviewStorage extends Storage<Review> {
 
     void addReviewLikeOrDislike(int reviewId, int userId, boolean isLike);
 
-    void deleteReviewLikeOrDislike(int reviewId, int userId, boolean isLike);
+    int deleteReviewLikeOrDislike(int reviewId, int userId, boolean isLike);
 
-    List<Review> getTop(int count);
+    List<Review> getTopReviews(int count);
 
 
 }

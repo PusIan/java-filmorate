@@ -41,6 +41,23 @@ public class ReviewController {
         return reviewService.getReviewByFilmOrAll(filmId, count);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public
+    @PutMapping("/{reviewId}/like/{userId}")
+    public void addReviewLike(@PathVariable int reviewId, @PathVariable int userId) {
+        reviewService.addReviewLike(reviewId, userId);
+    }
+
+    @PutMapping("/{reviewId}/dislike/{userId}")
+    public void addReviewDislike(@PathVariable int reviewId, @PathVariable int userId) {
+        reviewService.addReviewDislike(reviewId, userId);
+    }
+
+    @DeleteMapping("/{reviewId}/dislike/{userId}")
+    public void deleteReviewDislike(@PathVariable int reviewId, @PathVariable int userId) {
+        reviewService.deleteReviewDislike(reviewId, userId);
+    }
+
+    @DeleteMapping("/{reviewId}/like/{userId}")
+    public void deleteReviewLike(@PathVariable int reviewId, @PathVariable int userId) {
+        reviewService.deleteReviewLike(reviewId, userId);
+    }
 }

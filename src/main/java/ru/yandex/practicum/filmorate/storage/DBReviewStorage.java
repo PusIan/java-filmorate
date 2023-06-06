@@ -27,7 +27,7 @@ public class DBReviewStorage implements ReviewStorage {
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class));
     }
 
-    public List<Review> getTop(int count) {
+    public List<Review> getTopReviews(int count) {
         String selectAll = "SELECT * FROM reviews ORDER BY useful DESC limit ?";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class), count);
     }
@@ -107,7 +107,7 @@ public class DBReviewStorage implements ReviewStorage {
      * При удалении лайка/дизлайка скручиваем/накручиваем useful у отзыва.
      */
     @Override
-    public void deleteReviewLikeOrDislike(int userId, int reviewId, boolean isLike) {
+    public int deleteReviewLikeOrDislike(int userId, int reviewId, boolean isLike) {
         String deleteLike = "DELETE FROM review_likes WHERE user_id=? AND review_id=? AND is_like=?";
         jdbcTemplate.update(deleteLike, userId, reviewId, isLike);
         updateUseful(reviewId, !isLike);
