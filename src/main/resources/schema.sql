@@ -10,6 +10,12 @@ CREATE TABLE IF NOT EXISTS genre
     name VARCHAR(64) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS director
+(
+    id   INT PRIMARY KEY,
+    name VARCHAR(64) NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS film
 (
     id            INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -17,7 +23,8 @@ CREATE TABLE IF NOT EXISTS film
     description   VARCHAR(200),
     release_date  DATE,
     duration      INT,
-    rating_mpa_id INT REFERENCES rating_mpa
+    rating_mpa_id INT REFERENCES rating_mpa,
+    director_id   INT REFERENCES director
 );
 
 CREATE TABLE IF NOT EXISTS film_genre
@@ -55,3 +62,6 @@ CREATE TABLE IF NOT EXISTS friend_request
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS friend_request_uq1 on friend_request (user_initiator_id, user_friend_id);
+
+
+

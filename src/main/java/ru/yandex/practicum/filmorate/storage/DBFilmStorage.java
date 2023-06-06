@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
@@ -30,6 +31,8 @@ public class DBFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RatingMpaStorage ratingMpaStorage;
+
+    private final DirectorStorage directorStorage;
 
     @Override
     public List<Film> getPopularFilms(int count) {
@@ -139,13 +142,17 @@ public class DBFilmStorage implements FilmStorage {
                 .getById(resultSet.getInt("rating_mpa_id"))
                 .orElseThrow();
         List<Genre> genres = this.getFilmGenre(resultSet.getInt("id"));
+        Director director = directorStorage
+                .getById(resultSet.getInt("director_id"))
+                .orElseThrow();
         return new Film(resultSet.getInt("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
                 resultSet.getDate("release_date"),
                 resultSet.getInt("duration"),
                 genres,
-                ratingMpa);
+                ratingMpa,
+                director);
     }
 
     @Override

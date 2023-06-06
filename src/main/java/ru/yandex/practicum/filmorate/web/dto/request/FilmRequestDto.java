@@ -12,6 +12,7 @@ import java.util.List;
 @Data
 @FilmValid
 public class FilmRequestDto {
+    protected DirectorRequestDto director;
     protected MpaRequestDto mpa;
     protected List<GenreRequestDto> genres;
     private Integer id;
