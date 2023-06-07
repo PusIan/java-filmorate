@@ -27,4 +27,8 @@ public class Review extends Entity {
         return isPositive;
     }
 
+    @Override
+    public Integer getId() {
+        return getReviewId();
+    }
 }
