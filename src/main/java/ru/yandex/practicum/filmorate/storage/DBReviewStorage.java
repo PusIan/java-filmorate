@@ -103,6 +103,7 @@ public class DBReviewStorage implements ReviewStorage {
         jdbcTemplate.update(insertLike, userId, reviewId, isLike);
         updateUseful(reviewId, isLike);
     }
+
     /**
      * При удалении лайка/дизлайка скручиваем/накручиваем useful у отзыва.
      */
