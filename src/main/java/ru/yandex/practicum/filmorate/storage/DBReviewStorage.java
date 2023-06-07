@@ -23,18 +23,21 @@ public class DBReviewStorage implements ReviewStorage {
 
     @Override
     public List<Review> getAll() {
-        String selectAll = "SELECT * FROM reviews ORDER BY useful DESC";
+        String selectAll = "SELECT review_id, user_id, film_id, is_positive, "
+        + "useful, content FROM reviews ORDER BY useful DESC";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class));
     }
 
     public List<Review> getTopReviews(int count) {
-        String selectAll = "SELECT * FROM reviews ORDER BY useful DESC limit ?";
+        String selectAll = "SELECT review_id, user_id, film_id, is_positive, " +
+                "useful, content FROM reviews ORDER BY useful DESC limit ?";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class), count);
     }
 
     @Override
     public Optional<Review> getById(int id) {
-        String queryById = "SELECT * FROM reviews WHERE id=?";
+        String queryById = "SELECT review_id, user_id, film_id, is_positive, " +
+                "useful, content FROM reviews WHERE review_id=?";
         return jdbcTemplate.query(queryById, new BeanPropertyRowMapper<>(Review.class), id)
                 .stream()
                 .findFirst();
@@ -42,7 +45,7 @@ public class DBReviewStorage implements ReviewStorage {
 
     @Override
     public boolean existsById(int id) {
-        String find = "SELECT (EXISTS (SELECT 1 FROM reviews WHERE id=?))";
+        String find = "SELECT (EXISTS (SELECT 1 FROM reviews WHERE review_id=?))";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(find, id);
         srs.next();
         return srs.getBoolean(1);
@@ -54,10 +57,10 @@ public class DBReviewStorage implements ReviewStorage {
                 "values (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement psReview = connection.prepareStatement(insertReview, new String[]{"id"});
+            PreparedStatement psReview = connection.prepareStatement(insertReview, new String[]{"review_id"});
             psReview.setInt(1, review.getUserId());
             psReview.setInt(2, review.getFilmId());
-            psReview.setBoolean(3, review.isPositive());
+            psReview.setBoolean(3, review.isIsPositive());
             psReview.setInt(4, review.getUseful());
             psReview.setString(5, review.getContent());
             return psReview;
@@ -68,13 +71,13 @@ public class DBReviewStorage implements ReviewStorage {
 
     @Override
     public Optional<Review> update(Review review) {
-        int reviewId = review.getReviewId();
+        int reviewId = review.getId();
         String updReview = "UPDATE reviews SET user_id=?, film_id=?, is_positive=?, "
-                         + "useful=?, content=? WHERE id=?";
+                         + "useful=?, content=? WHERE review_id=?";
         jdbcTemplate.update(updReview,
                 review.getUserId(),
                 review.getFilmId(),
-                review.isPositive(),
+                review.isIsPositive(),
                 review.getUseful(),
                 review.getContent(),
                 reviewId
@@ -82,15 +85,22 @@ public class DBReviewStorage implements ReviewStorage {
         return getById(reviewId);
     }
 
+    /**
+     * Сначала удаляем лайки у отзыва.
+     * На случай без дилит каскада.
+     */
     @Override
-    public void delete(int id) {
-        String delReview = "DELETE FROM reviews WHERE id=?";
-        jdbcTemplate.update(delReview, id);
+    public void delete(int reviewId) {
+        String deleteLikes = "DELETE FROM review_likes WHERE review_id=?";
+        String delReview = "DELETE FROM reviews WHERE review_id=?";
+        jdbcTemplate.update(deleteLikes, reviewId);
+        jdbcTemplate.update(delReview, reviewId);
     }
 
     @Override
     public List<Review> getReviewsByFilm(int filmId, int count) {
-        String selectByFilm = "SELECT * FROM reviews WHERE film_id=? ORDER BY useful DESC limit ?";
+        String selectByFilm = "SELECT review_id, user_id, film_id, is_positive, " +
+                "useful, content FROM reviews WHERE film_id=? ORDER BY useful DESC limit ?";
         return jdbcTemplate.query(selectByFilm, new BeanPropertyRowMapper<>(Review.class), filmId, count);
     }
 
@@ -117,7 +127,7 @@ public class DBReviewStorage implements ReviewStorage {
 
     private void updateUseful(int reviewId, boolean isLike) {
         String plusMinus = isLike ? "+ 1" : "- 1";
-        String updReview = "UPDATE review SET useful = useful + " + plusMinus + " WHERE id=?";
+        String updReview = "UPDATE review SET useful = useful + " + plusMinus + " WHERE review_id=?";
         jdbcTemplate.update(updReview, reviewId);
     }
 }

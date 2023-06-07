@@ -36,12 +36,13 @@ public class ReviewService extends CrudService<Review> {
     @Override
     public Review create(Review entity) {
          checkFilmAndUser(entity);
+         entity.setUseful(0);
          return super.create(entity);
     }
 
     @Override
     public Review update(Review entity) {
-        int reviewId = entity.getReviewId();
+        int reviewId = entity.getId();
         if (!reviewStorage.existsById(reviewId)) {
             throw new NotFoundException("Review with id " + reviewId + " not found.");
         }

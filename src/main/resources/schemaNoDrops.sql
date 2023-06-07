@@ -1,14 +1,3 @@
-drop table if exists review_likes;
-drop table if exists reviews;
-drop table if exists like_;
-drop table if exists friend_request;
-drop table if exists film_genre;
-drop table if exists film;
-drop table if exists rating_mpa;
-drop table if exists user_;
-drop table if exists genre;
-
-
 CREATE TABLE IF NOT EXISTS rating_mpa
 (
     id   INT PRIMARY KEY,
@@ -68,7 +57,7 @@ CREATE TABLE IF NOT EXISTS friend_request
 CREATE UNIQUE INDEX IF NOT EXISTS friend_request_uq1 on friend_request (user_initiator_id, user_friend_id);
 
 CREATE TABLE IF NOT EXISTS reviews (
-    review_id       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id              INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id         INT REFERENCES user_ ON DELETE CASCADE NOT NULL,
     film_id         INT REFERENCES film ON DELETE CASCADE NOT NULL,
     is_positive     BOOLEAN NOT NULL,
