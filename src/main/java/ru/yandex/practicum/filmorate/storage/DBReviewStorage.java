@@ -71,13 +71,13 @@ public class DBReviewStorage implements ReviewStorage {
         int reviewId = review.getReviewId();
         String updReview = "UPDATE reviews SET user_id=?, film_id=?, is_positive=?, "
                          + "useful=?, content=? WHERE id=?";
-        jdbcTemplate.update(updReview
-                , review.getUserId()
-                , review.getFilmId()
-                , review.isPositive()
-                , review.getUseful()
-                , review.getContent()
-                , reviewId
+        jdbcTemplate.update(updReview,
+                review.getUserId(),
+                review.getFilmId(),
+                review.isPositive(),
+                review.getUseful(),
+                review.getContent(),
+                reviewId
         );
         return getById(reviewId);
     }
