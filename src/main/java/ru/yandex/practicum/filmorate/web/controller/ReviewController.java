@@ -16,7 +16,7 @@ public class ReviewController {
     private  final ReviewService reviewService;
 
     @PostMapping
-    public Review create(@Valid @RequestBody Review review) {
+    public Review create(@RequestBody Review review) {
         return reviewService.create(review);
     }
 
