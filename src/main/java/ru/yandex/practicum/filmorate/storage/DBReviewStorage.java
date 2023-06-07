@@ -109,8 +109,9 @@ public class DBReviewStorage implements ReviewStorage {
     @Override
     public int deleteReviewLikeOrDislike(int userId, int reviewId, boolean isLike) {
         String deleteLike = "DELETE FROM review_likes WHERE user_id=? AND review_id=? AND is_like=?";
-        jdbcTemplate.update(deleteLike, userId, reviewId, isLike);
+        int returnCount = jdbcTemplate.update(deleteLike, userId, reviewId, isLike);
         updateUseful(reviewId, !isLike);
+        return returnCount;
     }
 
     private void updateUseful(int reviewId, boolean isLike) {

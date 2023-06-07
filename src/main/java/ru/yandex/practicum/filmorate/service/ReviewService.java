@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.Storage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -75,20 +76,27 @@ public class ReviewService extends CrudService<Review> {
         }
     }
 
-    public void addReviewLike(int reviewId, int userId) {
-        if (...)
-        reviewStorage.addReviewLikeOrDislike(reviewId, userId, true);
+    public void addReviewLikeOrDislike(int reviewId, int userId, boolean isLike) {
+        checkReviewAndUser(reviewId, userId);
+        reviewStorage.addReviewLikeOrDislike(reviewId, userId, isLike);
     }
 
-    public void addReviewDislike(int reviewId, int userId) {
-        reviewStorage.addReviewLikeOrDislike(reviewId, userId, false);
+    public void deleteReviewLikeOrDislike(int reviewId, int userId, boolean isLike) {
+        checkReviewAndUser(reviewId, userId);
+        int returnCount = reviewStorage.deleteReviewLikeOrDislike(reviewId, userId, isLike);
+        if (returnCount == 0) {
+            throw new NotFoundException("User with id " + userId + " didn't like review with id " + reviewId);
+        }
     }
 
-    public void deleteReviewDislike(int reviewId, int userId) {
-        reviewStorage.deleteReviewLikeOrDislike(reviewId, userId, false);
-    }
-
-    public void deleteReviewLike(int reviewId, int userId) {
-        reviewStorage.deleteReviewLikeOrDislike(reviewId, userId, true);
+    private void checkReviewAndUser(int reviewId, int userId) {
+        Optional<Review> review = reviewStorage.getById(reviewId);
+        if (review.isEmpty()) {
+            throw new NotFoundException("Review with id " + reviewId + " not found.");
+        } else if (!userStorage.existsById(userId)) {
+            throw new NotFoundException("User with id " + userId + " not found.");
+        } else if (review.get().getUserId() == userId) {
+            throw new NotFoundException("Users can not like or dislike their own reviews.");
+        }
     }
 }
