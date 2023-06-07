@@ -20,5 +20,5 @@ public class Film extends Entity {
     private Integer duration;
     private List<Genre> genres;
     private RatingMpa mpa;
-    private Director director;
+    private List<Directors> directors;
 }

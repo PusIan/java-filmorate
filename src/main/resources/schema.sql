@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS genre
 
 CREATE TABLE IF NOT EXISTS director
 (
-    id   INT PRIMARY KEY,
+    id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(64) NOT NULL
 );
 
@@ -25,6 +25,13 @@ CREATE TABLE IF NOT EXISTS film
     duration      INT,
     rating_mpa_id INT REFERENCES rating_mpa,
     director_id   INT REFERENCES director
+);
+
+CREATE TABLE IF NOT EXISTS film_directors
+(
+    id       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    film_id     INT NOT NULL REFERENCES film (id) ON DELETE CASCADE,
+    director_id INT NOT NULL REFERENCES director (id)  ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS film_genre

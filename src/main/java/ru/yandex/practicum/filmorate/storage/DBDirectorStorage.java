@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Directors;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -22,18 +21,16 @@ public class DBDirectorStorage implements DirectorStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
-    private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
     @Override
-    public List<Director> getAll() {
+    public List<Directors> getAll() {
         String sqlQuery = "SELECT * FROM director";
-        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Director.class));
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Directors.class));
     }
 
     @Override
-    public Optional<Director> getById(int id) {
+    public Optional<Directors> getById(int id) {
         String sqlQuery = "select * from director WHERE id = ?";
-        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Director.class), id)
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Directors.class), id)
                 .stream()
                 .findFirst();
     }
@@ -47,21 +44,21 @@ public class DBDirectorStorage implements DirectorStorage {
 
     @Transactional
     @Override
-    public Director create(Director entity) {
-        String sqlQueryDirector = "INSERT INTO director (name) " + "VALUES (?)";
+    public Directors create(Directors entity) {
+        String sqlQueryDirector = "INSERT INTO director (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
-            PreparedStatement stmtFilm = connection.prepareStatement(sqlQueryDirector, new String[]{"id"});
-            stmtFilm.setString(1, entity.getName());
-            return stmtFilm;
+            PreparedStatement stmtDirector = connection.prepareStatement(sqlQueryDirector, new String[]{"id"});
+            stmtDirector.setString(1, entity.getName());
+            return stmtDirector;
         }, keyHolder);
-        int filmId = Objects.requireNonNull(keyHolder.getKey()).intValue();
-        return this.getById(filmId).orElseThrow();
+        int directorId = Objects.requireNonNull(keyHolder.getKey()).intValue();
+        return getById(directorId).orElseThrow();
     }
 
     @Transactional
     @Override
-    public Optional<Director> update(Director entity) {
+    public Optional<Directors> update(Directors entity) {
         String sqlQuery = "UPDATE director SET name = ? WHERE id = ?";
         jdbcTemplate.update(sqlQuery, entity.getName(), entity.getId());
         return this.getById(entity.getId());

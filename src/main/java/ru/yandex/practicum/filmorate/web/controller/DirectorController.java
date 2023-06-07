@@ -15,17 +15,16 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@RequestMapping("/director")
+@RequestMapping("/directors")
 public class DirectorController {
     private final ConversionService conversionService;
     private final DirectorService directorService;
-
     private final DirectorMapper directorMapper;
 
     @GetMapping
     public Collection<DirectorResponseDto> getAll() {
         return directorService.getAll().stream()
-                .map(film -> conversionService.convert(film, DirectorResponseDto.class))
+                .map(director -> conversionService.convert(director, DirectorResponseDto.class))
                 .collect(Collectors.toList());
     }
 
@@ -43,8 +42,8 @@ public class DirectorController {
     public DirectorResponseDto update(@Valid @RequestBody DirectorRequestDto directorRequestDto) {
         return conversionService.convert(directorService.update(directorMapper.mapToDirector(directorRequestDto)), DirectorResponseDto.class);
     }
-    
-    @DeleteMapping
+
+    @DeleteMapping("/{id}")
     public void removeById(@PathVariable int id) {
         directorService.deleteDirector(id);
     }
