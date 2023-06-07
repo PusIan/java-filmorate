@@ -15,8 +15,8 @@ public class FilmService extends CrudService<Film> {
     private final FilmStorage filmStorage;
     private final UserService userService;
 
-    public List<Film> filmsDirectorSorted(int directorId,String sort){
-        return filmStorage.filmsDirectorSorted(directorId,sort);
+    public List<Film> filmsDirectorSorted(int directorId, String sort) {
+        return filmStorage.filmsDirectorSorted(directorId, sort);
     }
 
     public void addLike(int userId, int filmId) {
