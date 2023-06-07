@@ -69,7 +69,7 @@ public class ReviewService extends CrudService<Review> {
     }
 
     public List<Review> getReviewByFilmOrAll(int filmId, int count) {
-        if(filmId == 0) {
+        if (filmId == 0) {
             return reviewStorage.getTopReviews(count);
         } else {
             return reviewStorage.getReviewsByFilm(filmId, count);

@@ -70,7 +70,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS reviews_uq_user_film on reviews (user_id, film
 CREATE TABLE IF NOT EXISTS review_likes (
     id              INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id         INT REFERENCES user_ ON DELETE CASCADE NOT NULL,
-    review_id       INT REFERENCES review ON DELETE CASCADE NOT NULL,
+    review_id       INT REFERENCES reviews ON DELETE CASCADE NOT NULL,
     is_like         BOOLEAN NOT NULL
 );
 
