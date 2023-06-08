@@ -128,7 +128,7 @@ public class DBReviewStorage implements ReviewStorage {
 
     private void updateUseful(int reviewId, boolean isLike) {
         String plusMinus = isLike ? "+1" : "-1";
-        String updReview = "UPDATE review SET useful = useful" + plusMinus + " WHERE review_id=?";
+        String updReview = "UPDATE reviews SET useful = useful" + plusMinus + " WHERE review_id=?";
         jdbcTemplate.update(updReview, reviewId);
     }
 }
