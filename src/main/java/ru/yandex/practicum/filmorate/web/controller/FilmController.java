@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
 import ru.yandex.practicum.filmorate.web.dto.response.FilmResponseDto;
@@ -11,6 +12,7 @@ import ru.yandex.practicum.filmorate.web.mapper.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -56,6 +58,15 @@ public class FilmController {
     @GetMapping("/popular")
     public Collection<FilmResponseDto> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
         return this.filmService.getPopularFilms(count)
+                .stream()
+                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping("/common")
+    public Collection<FilmResponseDto> getCommonFilms(@RequestParam(name = "userId") int userId,
+                                     @RequestParam(name = "friendId") int friendId) {
+        return this.filmService.getCommonFilms(userId, friendId)
                 .stream()
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());

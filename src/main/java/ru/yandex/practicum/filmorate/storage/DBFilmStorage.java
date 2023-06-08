@@ -104,6 +104,18 @@ public class DBFilmStorage implements FilmStorage {
                 .findFirst();
     }
 
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT * FROM (SELECT f.* FROM film f \n" +
+                "                LEFT JOIN like_ l ON l.film_id = f.ID\n" +
+                "                GROUP BY f.ID \n" +
+                "                ORDER BY COUNT (l.film_id))\n" +
+                "                f, like_ l1, like_ l2\n" +
+                "                WHERE f.id = l1.film_id AND f.id = l2.film_id \n" +
+                "                AND l1.user_id = ? AND l2.user_id = ?";
+        return jdbcTemplate.query(sql, this::mapRowToFilm, userId, friendId);
+    }
+
     private void saveFilmGenre(Integer filmId, List<Genre> genreList) {
         if (genreList != null && genreList.size() > 0) {
             String sqlQueryDeleteGenreForNotExistentIds = "DELETE FROM film_genre WHERE film_id = :filmId " +
