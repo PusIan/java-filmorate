@@ -23,16 +23,16 @@ CREATE TABLE IF NOT EXISTS film
     description   VARCHAR(200),
     release_date  DATE,
     duration      INT,
-    rating_mpa_id INT REFERENCES rating_mpa,
-    director_id   INT REFERENCES director
+    rating_mpa_id INT REFERENCES rating_mpa
 );
 
 CREATE TABLE IF NOT EXISTS film_directors
 (
-    id       INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     film_id     INT NOT NULL REFERENCES film (id) ON DELETE CASCADE,
-    director_id INT NOT NULL REFERENCES director (id)  ON DELETE CASCADE
+    director_id INT NOT NULL REFERENCES director (id) ON DELETE CASCADE
 );
+CREATE UNIQUE INDEX IF NOT EXISTS film_directors_uq1 on film_directors (film_id, director_id);
 
 CREATE TABLE IF NOT EXISTS film_genre
 (

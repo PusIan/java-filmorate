@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -18,7 +15,8 @@ public class Fixtures {
                 Date.valueOf(LocalDate.now()),
                 100,
                 new ArrayList<>(List.of(new Genre(1, "Комедия"), new Genre(2, "Драма"))),
-                new RatingMpa(1, "G"));
+                new RatingMpa(1, "G"),
+                null);
     }
 
     public static Film getFilm2() {
@@ -28,7 +26,19 @@ public class Fixtures {
                 Date.valueOf(LocalDate.now().minusDays(1)),
                 200,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
-                new RatingMpa(2, "PG"));
+                new RatingMpa(2, "PG"),
+                null);
+    }
+
+    public static Film getFilm3() {
+        return new Film(3,
+                "Film 3",
+                "Description 3",
+                Date.valueOf(LocalDate.now().minusDays(3)),
+                200,
+                new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
+                new RatingMpa(2, "PG"),
+                List.of(new Directors(5, "Trail")));
     }
 
     public static User getUser1() {
@@ -78,5 +88,19 @@ public class Fixtures {
 
     public static RatingMpa getRatingMpa() {
         return getAllRatingMpa().get(0);
+    }
+
+    public static List<Directors> getDirectorList() {
+        return List.of(new Directors(1, "Luck"),
+                new Directors(2, "Bortko"),
+                new Directors(3, "Reuel Tolkien"));
+    }
+
+    public static Directors getDirector() {
+        return new Directors(2, "Bortko");
+    }
+
+    public static Directors getDirector2() {
+        return new Directors(5, "Trail");
     }
 }
