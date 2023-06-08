@@ -4,5 +4,5 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface RecommendService<T, Y> {
-    List<Y> recommend(T entity, HashMap<T, HashMap<Y, Double>> data);
+    List<Y> recommend(T entity, HashMap<T, HashMap<Y, Integer>> data);
 }

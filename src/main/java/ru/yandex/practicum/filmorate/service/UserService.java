@@ -18,7 +18,7 @@ import java.util.List;
 public class UserService extends CrudService<User> {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private final RecommendServiceImpl<User, Film> recommendService;
+    private final RecommendServiceImpl<Integer, Integer> recommendService;
 
     public void addFriend(int userId, int friendId) {
         this.validateIds(userId, friendId);
@@ -52,25 +52,16 @@ public class UserService extends CrudService<User> {
 
     public List<Film> getFilmRecommendations(int userId) {
         this.validateIds(userId);
-        HashMap<Integer, User> users = new HashMap<>();
-        for (User user : userStorage.getAll()) {
-            users.put(user.getId(), user);
-        }
-        HashMap<Integer, Film> films = new HashMap<>();
-        for (Film film : filmStorage.getAll()) {
-            films.put(film.getId(), film);
-        }
-        User user = users.get(userId);
-        HashMap<User, HashMap<Film, Double>> likeData = new HashMap<>();
+        // HashMap<userId, HashMap<filmId, Integer>>
+        HashMap<Integer, HashMap<Integer, Integer>> likeData = new HashMap<>();
         List<UserFilmLike> userFilmLikeList = userStorage.getUserFilmLikes();
         for (UserFilmLike userFilmLike : userFilmLikeList) {
-            User currentUser = users.get(userFilmLike.getUserId());
-            Film currentFilm = films.get(userFilmLike.getFilmId());
-            if (!likeData.containsKey(currentUser)) {
-                likeData.put(currentUser, new HashMap<>());
+            if (!likeData.containsKey(userFilmLike.getUserId())) {
+                likeData.put(userFilmLike.getUserId(), new HashMap<>());
             }
-            likeData.get(currentUser).put(currentFilm, 1.0);
+            likeData.get(userFilmLike.getUserId()).put(userFilmLike.getFilmId(), 1);
         }
-        return recommendService.recommend(user, likeData);
+        List<Integer> filmIds = recommendService.recommend(userId, likeData);
+        return filmStorage.getFilmsByIds(filmIds);
     }
 }

@@ -4,15 +4,26 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+/*
+ *    Collaborative Filtering
+ *    The Slope One algorithm is an item-based collaborative filtering system.
+ *    It means that it is completely based on the user-item ranking. When we compute the
+ *    similarity between objects, we only know the history of rankings, not the content itself.
+ *    This similarity is then used to predict potential user rankings for user-item pairs not present in the dataset.
+ *
+ *    T - Entity which rates items
+ *    Y - Type of Item, for which we have rating
+ *
+ *    Description: https://www.baeldung.com/java-collaborative-filtering-recommendations
+ */
 @Service
 public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
 
     private final HashMap<Y, HashMap<Y, Double>> diff = new HashMap<>();
     private final HashMap<Y, HashMap<Y, Integer>> freq = new HashMap<>();
 
-
     @Override
-    public List<Y> recommend(T entity, HashMap<T, HashMap<Y, Double>> data) {
+    public List<Y> recommend(T entity, HashMap<T, HashMap<Y, Integer>> data) {
         if (!data.keySet().isEmpty() && data.containsKey(entity)) {
             prepareDiffFreqMatrices(data);
             return predict(entity, data);
@@ -20,15 +31,22 @@ public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
         return Collections.emptyList();
     }
 
-    private void prepareDiffFreqMatrices(HashMap<T, HashMap<Y, Double>> data) {
-        for (HashMap<Y, Double> user : data.values()) {
-            for (Map.Entry<Y, Double> e : user.entrySet()) {
+    /*
+     * Calculation of differences and frequencies matrices
+     * */
+    private void prepareDiffFreqMatrices(HashMap<T, HashMap<Y, Integer>> data) {
+        /*
+         * Based on the available data, we'll calculate the relationships between the items,
+         * as well as the number of items' occurrences. For each user, we check his/her rating of the items
+         * */
+        for (HashMap<Y, Integer> user : data.values()) {
+            for (Map.Entry<Y, Integer> e : user.entrySet()) {
                 if (!diff.containsKey(e.getKey())) {
                     diff.put(e.getKey(), new HashMap<Y, Double>());
                     freq.put(e.getKey(), new HashMap<Y, Integer>());
                 }
 
-                for (Map.Entry<Y, Double> e2 : user.entrySet()) {
+                for (Map.Entry<Y, Integer> e2 : user.entrySet()) {
                     int oldCount = 0;
                     if (freq.get(e.getKey()).containsKey(e2.getKey())) {
                         oldCount = freq.get(e.getKey()).get(e2.getKey()).intValue();
@@ -55,10 +73,15 @@ public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
         }
     }
 
-    private List<Y> predict(T entity, HashMap<T, HashMap<Y, Double>> data) {
+    /*
+     * The main part of the Slope One, we are going to predict all missing ratings based on the existing data.
+     * In order to do that, we need to compare the user-item ratings
+     * with differences matrix calculated in the prepareDiffFreqMatrices
+     * */
+    private List<Y> predict(T entity, HashMap<T, HashMap<Y, Integer>> data) {
         HashMap<Y, Double> uPred = new HashMap<>();
         HashMap<Y, Integer> uFreq = new HashMap<>();
-        HashMap<Y, Double> userData = data.get(entity);
+        HashMap<Y, Integer> userData = data.get(entity);
         if (userData != null) {
             for (Y j : userData.keySet()) {
                 for (Y k : diff.keySet()) {
@@ -77,7 +100,13 @@ public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
             }
 
             Set<Y> ret = clean.keySet();
+
+            /* We should receive the predictions for items that user didn't rate,
+            but also the repeated ratings for the items that he rated.
+            Those repeated rates are not needed in our case, but can be used for algorithm validation.
+            * */
             ret.removeAll(userData.keySet());
+
             return new ArrayList<>(ret);
         }
         return Collections.emptyList();

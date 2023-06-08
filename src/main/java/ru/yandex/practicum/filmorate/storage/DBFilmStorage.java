@@ -54,6 +54,17 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByIds(List<Integer> filmIds) {
+        SqlParameterSource parameters = new MapSqlParameterSource("filmIds", filmIds);
+        String sqlQuery = "SELECT * FROM film WHERE id IN (:filmIds)";
+        return namedParameterJdbcTemplate.query(
+                sqlQuery,
+                parameters,
+                this::mapRowToFilm
+        );
+    }
+
+    @Override
     @Transactional
     public Film create(Film entity) {
         String sqlQueryFilm = "INSERT INTO film(name, description, release_date, duration, rating_mpa_id) " +
