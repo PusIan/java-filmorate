@@ -30,7 +30,7 @@ public class DBReviewStorage implements ReviewStorage {
 
     public List<Review> getTopReviews(int count) {
         String selectAll = "SELECT review_id, user_id, film_id, is_positive, " +
-                           "useful, content FROM reviews ORDER BY useful limit ?";
+                           "useful, content FROM reviews ORDER BY useful DESC limit ?";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class), count);
     }
 
