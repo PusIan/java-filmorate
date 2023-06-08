@@ -43,10 +43,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     @ExceptionHandler(value = ConstraintViolationException.class)
     protected ResponseEntity<Object> constraintViolationException(ConstraintViolationException ex, WebRequest request) {
         log.error("Constraint error: {}", ex.getMessage());
-        Map<String, Object> body = getGeneralErrorBody(HttpStatus.NOT_FOUND, request);
+        Map<String, Object> body = getGeneralErrorBody(HttpStatus.BAD_REQUEST, request);
         List<String> errors = Arrays.stream(ex.getMessage().split(", ")).collect(Collectors.toList());
         body.put(REASONS, errors);
-        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+        return handleExceptionInternal(ex, body, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     private Map<String, Object> getGeneralErrorBody(HttpStatus status,

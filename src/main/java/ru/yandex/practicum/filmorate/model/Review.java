@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Positive;
 
 @Data
 @NoArgsConstructor
@@ -16,10 +15,8 @@ public class Review extends Entity {
     private String content;
     private boolean isPositive;
     @NonNull
-    @Positive
     private Integer userId;
     @NonNull
-    @Positive
     private Integer filmId;
     private int useful;
 
