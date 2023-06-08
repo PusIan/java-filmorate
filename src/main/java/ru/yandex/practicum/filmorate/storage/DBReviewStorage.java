@@ -30,14 +30,14 @@ public class DBReviewStorage implements ReviewStorage {
 
     public List<Review> getTopReviews(int count) {
         String selectAll = "SELECT review_id, user_id, film_id, is_positive, " +
-                "useful, content FROM reviews ORDER BY useful DESC limit ?";
+                           "useful, content FROM reviews ORDER BY useful limit ?";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class), count);
     }
 
     @Override
     public Optional<Review> getById(int id) {
         String queryById = "SELECT review_id, user_id, film_id, is_positive, " +
-                "useful, content FROM reviews WHERE review_id=?";
+                           "useful, content FROM reviews WHERE review_id=?";
         return jdbcTemplate.query(queryById, new BeanPropertyRowMapper<>(Review.class), id)
                 .stream()
                 .findFirst();
@@ -127,8 +127,8 @@ public class DBReviewStorage implements ReviewStorage {
     }
 
     private void updateUseful(int reviewId, boolean isLike) {
-        String plusMinus = isLike ? "+ 1" : "- 1";
-        String updReview = "UPDATE review SET useful = useful + " + plusMinus + " WHERE review_id=?";
+        String plusMinus = isLike ? "+1" : "-1";
+        String updReview = "UPDATE review SET useful = useful" + plusMinus + " WHERE review_id=?";
         jdbcTemplate.update(updReview, reviewId);
     }
 }
