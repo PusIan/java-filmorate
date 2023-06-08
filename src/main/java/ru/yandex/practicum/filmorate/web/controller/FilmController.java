@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
 import ru.yandex.practicum.filmorate.web.dto.response.FilmResponseDto;
@@ -12,7 +11,6 @@ import ru.yandex.practicum.filmorate.web.mapper.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
