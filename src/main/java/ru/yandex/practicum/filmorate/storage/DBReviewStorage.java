@@ -69,11 +69,14 @@ public class DBReviewStorage implements ReviewStorage {
         return getById(reviewId).orElseThrow();
     }
 
+    /**
+     * Исключен апдейт user_id, film_id (из-за тестов).
+     */
     @Override
     public Optional<Review> update(Review review) {
         int reviewId = review.getId();
-        String updReview = "UPDATE reviews SET user_id=?, film_id=?, is_positive=?, "
-                         + "useful=?, content=? WHERE review_id=?";
+        String updReview = "UPDATE reviews SET is_positive=?, useful=?, content=? "
+                         + "WHERE review_id=?";
         jdbcTemplate.update(updReview,
                 review.getUserId(),
                 review.getFilmId(),
