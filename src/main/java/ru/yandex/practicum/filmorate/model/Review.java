@@ -23,8 +23,15 @@ public class Review extends Entity {
     private Integer filmId;
     private int useful;
 
+    /**
+     * <a href="https://stackoverflow.com/questions/49702336/jdbctemplate-boolean-not-mapping-properly-with-beanpropertyrowmapper">...</a>
+     */
     public boolean isIsPositive() {
         return isPositive;
+    }
+
+    public void setIsPositive(boolean positive) {
+        isPositive = positive;
     }
 
     @Override
