@@ -3,7 +3,9 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Operation;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
@@ -18,11 +20,13 @@ public class FilmService extends CrudService<Film> {
     public void addLike(int userId, int filmId) {
         this.userService.validateIds(userId);
         this.filmStorage.addLike(userId, filmId);
+        userService.addEvent(userId, EventType.LIKE, Operation.ADD, filmId);
     }
 
     public void deleteLike(int userId, int filmId) {
         this.userService.validateIds(userId);
         this.filmStorage.deleteLike(userId, filmId);
+        userService.addEvent(userId, EventType.LIKE, Operation.REMOVE, filmId);
     }
 
     public List<Film> getPopularFilms(int count) {

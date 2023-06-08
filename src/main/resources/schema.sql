@@ -55,3 +55,14 @@ CREATE TABLE IF NOT EXISTS friend_request
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS friend_request_uq1 on friend_request (user_initiator_id, user_friend_id);
+
+CREATE TABLE IF NOT EXISTS events
+(
+    event_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    timestamp  BIGINT,
+    user_id    INT REFERENCES user_ ON DELETE CASCADE,
+    event_type VARCHAR(10),
+    operation  VARCHAR(10),
+    entity_id  INT
+);
+
