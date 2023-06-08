@@ -78,8 +78,6 @@ public class DBReviewStorage implements ReviewStorage {
         String updReview = "UPDATE reviews SET is_positive=?, useful=?, content=? "
                          + "WHERE review_id=?";
         jdbcTemplate.update(updReview,
-                review.getUserId(),
-                review.getFilmId(),
                 review.isIsPositive(),
                 review.getUseful(),
                 review.getContent(),
