@@ -13,7 +13,8 @@ public class Review extends Entity {
     @NonNull
     @NotBlank
     private String content;
-    private boolean isPositive;
+    @NonNull
+    private Boolean isPositive;
     @NonNull
     private Integer userId;
     @NonNull
