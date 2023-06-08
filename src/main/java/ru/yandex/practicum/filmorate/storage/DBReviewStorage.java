@@ -24,13 +24,13 @@ public class DBReviewStorage implements ReviewStorage {
     @Override
     public List<Review> getAll() {
         String selectAll = "SELECT review_id, user_id, film_id, is_positive, "
-        + "useful, content FROM reviews ORDER BY useful";
+        + "useful, content FROM reviews ORDER BY useful DESC";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class));
     }
 
     public List<Review> getTopReviews(int count) {
         String selectAll = "SELECT review_id, user_id, film_id, is_positive, " +
-                           "useful, content FROM reviews ORDER BY useful limit ?";
+                           "useful, content FROM reviews ORDER BY useful DESC limit ?";
         return jdbcTemplate.query(selectAll, new BeanPropertyRowMapper<>(Review.class), count);
     }
 
@@ -75,11 +75,10 @@ public class DBReviewStorage implements ReviewStorage {
     @Override
     public Optional<Review> update(Review review) {
         int reviewId = review.getId();
-        String updReview = "UPDATE reviews SET is_positive=?, useful=?, content=? "
+        String updReview = "UPDATE reviews SET is_positive=?, content=? "
                          + "WHERE review_id=?";
         jdbcTemplate.update(updReview,
                 review.isIsPositive(),
-                review.getUseful(),
                 review.getContent(),
                 reviewId
         );
@@ -101,7 +100,7 @@ public class DBReviewStorage implements ReviewStorage {
     @Override
     public List<Review> getReviewsByFilm(int filmId, int count) {
         String selectByFilm = "SELECT review_id, user_id, film_id, is_positive, " +
-                "useful, content FROM reviews WHERE film_id=? ORDER BY useful limit ?";
+                "useful, content FROM reviews WHERE film_id=? ORDER BY useful DESC limit ?";
         return jdbcTemplate.query(selectByFilm, new BeanPropertyRowMapper<>(Review.class), filmId, count);
     }
 
