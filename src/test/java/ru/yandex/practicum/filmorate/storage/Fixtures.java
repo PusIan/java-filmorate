@@ -30,17 +30,6 @@ public class Fixtures {
                 null);
     }
 
-    public static Film getFilm3() {
-        return new Film(3,
-                "Film 3",
-                "Description 3",
-                Date.valueOf(LocalDate.now().minusDays(3)),
-                200,
-                new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
-                new RatingMpa(2, "PG"),
-                List.of(new Directors(5, "Trail")));
-    }
-
     public static User getUser1() {
         return new User(1,
                 "1@test.ru",
