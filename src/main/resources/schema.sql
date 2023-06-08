@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     film_id         INT REFERENCES film ON DELETE CASCADE NOT NULL,
     is_positive     BOOLEAN NOT NULL,
     useful          INT NOT NULL,
-    content         VARCHAR(128) NOT NULL
+    content         VARCHAR(128)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS reviews_uq_user_film on reviews (user_id, film_id);
