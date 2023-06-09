@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -30,6 +31,7 @@ public class DBFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RatingMpaStorage ratingMpaStorage;
+    private final GenreStorage genreStorage;
 
     @Override
     public List<Film> getPopularFilms(int count) {
@@ -39,6 +41,19 @@ public class DBFilmStorage implements FilmStorage {
                 "ORDER BY COUNT(l.id) DESC\n" +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int limit, int genreId, int year) {
+        Genre genre = genreStorage
+                .getById(genreId)
+                .orElseThrow();
+
+        return getPopularFilms(limit)
+                .stream()
+                .filter(film -> film.getGenres().contains(genre))
+                .filter(film -> film.getYear() == year)
+                .collect(Collectors.toList());
     }
 
     @Override
