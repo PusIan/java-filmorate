@@ -60,4 +60,12 @@ public class FilmController {
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/search")
+    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam String by) {
+        return this.filmService.searchFilms(query, by)
+                .stream()
+                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .collect(Collectors.toList());
+    }
 }
