@@ -29,7 +29,7 @@ public class DBDirectorStorage implements DirectorStorage {
 
     @Override
     public Optional<Directors> getById(int id) {
-        String sqlQuery = "select * from director WHERE id = ?";
+        String sqlQuery = "SELECT * FROM director WHERE id = ?";
         return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Directors.class), id)
                 .stream()
                 .findFirst();

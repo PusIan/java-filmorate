@@ -53,5 +53,4 @@ public class DBDirectorStorageTest {
         Directors createDirector2 = directorStorage.create(Fixtures.getDirector2());
         assertThat(directorStorage.getAll()).isEqualTo(List.of(createDirector, createDirector2));
     }
-
 }

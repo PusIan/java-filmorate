@@ -16,7 +16,7 @@ public class Fixtures {
                 100,
                 new ArrayList<>(List.of(new Genre(1, "Комедия"), new Genre(2, "Драма"))),
                 new RatingMpa(1, "G"),
-                null);
+                List.of(new Directors(1, "Bortko")));
     }
 
     public static Film getFilm2() {
@@ -27,7 +27,18 @@ public class Fixtures {
                 200,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
                 new RatingMpa(2, "PG"),
-                null);
+                List.of(new Directors(2, "Trail")));
+    }
+
+    public static Film getFilm3() {
+        return new Film(2,
+                "Film 3",
+                "Description 2",
+                Date.valueOf(LocalDate.now().minusDays(5)),
+                201,
+                new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
+                new RatingMpa(2, "PG"),
+                List.of(new Directors(2, "Trail")));
     }
 
     public static User getUser1() {
@@ -86,10 +97,10 @@ public class Fixtures {
     }
 
     public static Directors getDirector() {
-        return new Directors(2, "Bortko");
+        return new Directors(1, "Bortko");
     }
 
     public static Directors getDirector2() {
-        return new Directors(5, "Trail");
+        return new Directors(2, "Trail");
     }
 }

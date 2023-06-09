@@ -11,7 +11,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -21,10 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -32,8 +28,6 @@ public class DBFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RatingMpaStorage ratingMpaStorage;
-
-    private final DirectorStorage directorStorage;
 
     @Override
     public List<Film> getPopularFilms(int count) {
@@ -59,23 +53,22 @@ public class DBFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> filmsDirectorSorted(int directorId, String sort) {
-        if (directorStorage.existsById(directorId)) {
-            if (sort.equals("year")) {
-                String sqlQuery = "SELECT f.* FROM film f\n" +
-                        "where f.ID in (select film_id from film_directors where director_id = ?)" +
-                        "GROUP BY f.id\n" +
-                        "ORDER BY f.id DESC\n";
-                return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
-            } else if (sort.equals("likes")) {
-                String sqlQuery = "SELECT f.* FROM film f\n" +
-                        "LEFT JOIN like_ l ON l.film_id = f.id\n" +
-                        "where f.ID in (select film_id from film_directors where director_id = ?)" +
-                        "GROUP BY f.id\n" +
-                        "ORDER BY COUNT(l.id) DESC\n";
-                return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
-            }
+        if (sort.equals("year")) {
+            String sqlQuery = "SELECT f.* FROM film f\n" +
+                    "where f.ID in (select film_id from film_directors where director_id = ?)" +
+                    "GROUP BY f.id\n" +
+                    "ORDER BY f.id DESC\n";
+            return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
+        } else if (sort.equals("likes")) {
+            String sqlQuery = "SELECT f.* FROM film f\n" +
+                    "LEFT JOIN like_ l ON l.film_id = f.id\n" +
+                    "where f.ID in (SELECT film_id FROM film_directors WHERE director_id = ?)" +
+                    "GROUP BY f.id\n" +
+                    "ORDER BY COUNT(l.id) DESC\n";
+            return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
+        } else {
+            return new ArrayList<>();
         }
-        throw new NotFoundException(sort);
     }
 
     @Override
@@ -132,7 +125,7 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     private void saveFilmDirectors(Integer filmId, List<Directors> directorsList) {
-        if (directorsList != null) {
+        if (directorsList != null && !directorsList.isEmpty()) {
             String sqlQueryDeleteDirectorsForNotExistentIds = "DELETE FROM film_directors WHERE film_id = :filmId " +
                     "AND director_id NOT IN (:directorId)";
             SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(
@@ -155,7 +148,7 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     private void saveFilmGenre(Integer filmId, List<Genre> genreList) {
-        if (genreList != null && genreList.size() > 0) {
+        if (genreList != null && !genreList.isEmpty()) {
             String sqlQueryDeleteGenreForNotExistentIds = "DELETE FROM film_genre WHERE film_id = :filmId " +
                     "AND genre_id NOT IN (:genreIds)";
             SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(

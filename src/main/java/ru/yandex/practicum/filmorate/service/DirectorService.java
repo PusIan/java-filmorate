@@ -13,13 +13,14 @@ public class DirectorService extends CrudService<Directors> {
 
     private final DirectorStorage directorStorage;
 
-    public void deleteDirector(int id) {
+    @Override
+    public void delete(int id) {
         this.directorStorage.delete(id);
     }
 
     @Override
     Storage<Directors> getStorage() {
-        return  this.directorStorage;
+        return this.directorStorage;
     }
 
     @Override

@@ -13,9 +13,11 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService extends CrudService<Film> {
     private final FilmStorage filmStorage;
+    private final DirectorService directorService;
     private final UserService userService;
 
     public List<Film> filmsDirectorSorted(int directorId, String sort) {
+        directorService.validateIds(directorId);
         return filmStorage.filmsDirectorSorted(directorId, sort);
     }
 
@@ -41,5 +43,10 @@ public class FilmService extends CrudService<Film> {
     @Override
     String getServiceType() {
         return Film.class.getSimpleName();
+    }
+
+    @Override
+    public void delete(int id) {
+        this.filmStorage.delete(id);
     }
 }
