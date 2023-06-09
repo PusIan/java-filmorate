@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.web.mapper.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -54,16 +55,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<FilmResponseDto> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        return this.filmService.getPopularFilms(count)
-                .stream()
-                .map(film -> conversionService.convert(film, FilmResponseDto.class))
-                .collect(Collectors.toList());
-    }
-
-    @RequestMapping(value = "/popular", params = {"count", "genreId", "year"}, method = RequestMethod.GET)
-    public Collection<FilmResponseDto> getPopularFilms(@RequestParam(name = "count") int limit, @RequestParam int genreId, @RequestParam int year) {
-        return this.filmService.getPopularFilms(limit, genreId, year)
+    public Collection<FilmResponseDto> getPopularFilms(@RequestParam(defaultValue = "10") int count, @RequestParam Optional<Integer> genreId, @RequestParam Optional<Integer> year) {
+        return this.filmService.getPopularFilms(count, genreId, year)
                 .stream()
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());

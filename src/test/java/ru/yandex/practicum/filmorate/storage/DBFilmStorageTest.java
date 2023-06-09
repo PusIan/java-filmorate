@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -62,10 +63,10 @@ public class DBFilmStorageTest {
         Film createdFilm2 = filmStorage.create(Fixtures.getFilm2());
         User createdUser = userStorage.create(Fixtures.getUser1());
         filmStorage.addLike(createdUser.getId(), createdFilm1.getId());
-        assertThat(filmStorage.getPopularFilms(1)).isEqualTo(List.of(createdFilm1));
+        assertThat(filmStorage.getPopularFilms(1, Optional.empty(), Optional.empty())).isEqualTo(List.of(createdFilm1));
 
         filmStorage.deleteLike(createdUser.getId(), createdFilm1.getId());
         filmStorage.addLike(createdUser.getId(), createdFilm2.getId());
-        assertThat(filmStorage.getPopularFilms(1)).isEqualTo(List.of(createdFilm2));
+        assertThat(filmStorage.getPopularFilms(1, Optional.empty(), Optional.empty())).isEqualTo(List.of(createdFilm2));
     }
 }

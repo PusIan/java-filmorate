@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -34,26 +33,25 @@ public class DBFilmStorage implements FilmStorage {
     private final GenreStorage genreStorage;
 
     @Override
-    public List<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
         String sqlQuery = "SELECT f.* FROM film f\n" +
                 "LEFT JOIN like_ l ON l.film_id = f.id\n" +
                 "GROUP BY f.id\n" +
                 "ORDER BY COUNT(l.id) DESC\n" +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
-    }
+        List<Film> filmsSortedByLikes = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
 
-    @Override
-    public List<Film> getPopularFilms(int limit, int genreId, int year) {
-        Genre genre = genreStorage
-                .getById(genreId)
-                .orElseThrow();
+        if (genreId.isPresent()) {
+            Genre genre = genreStorage
+                    .getById(genreId.get())
+                    .orElseThrow();
 
-        return getPopularFilms(limit)
-                .stream()
-                .filter(film -> film.getGenres().contains(genre))
-                .filter(film -> film.getYear() == year)
-                .collect(Collectors.toList());
+            filmsSortedByLikes.removeIf(film -> !film.getGenres().contains(genre));
+        }
+        if (year.isPresent()) {
+            filmsSortedByLikes.removeIf(film -> film.getYear() != year.get());
+        }
+        return filmsSortedByLikes;
     }
 
     @Override
