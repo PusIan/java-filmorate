@@ -60,4 +60,12 @@ public class FilmController {
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());
     }
+
+    @RequestMapping(value = "/popular", params = {"count", "genreId", "year"}, method = RequestMethod.GET)
+    public Collection<FilmResponseDto> getPopularFilms(@RequestParam(name = "count") int limit, @RequestParam int genreId, @RequestParam int year) {
+        return this.filmService.getPopularFilms(limit, genreId, year)
+                .stream()
+                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .collect(Collectors.toList());
+    }
 }

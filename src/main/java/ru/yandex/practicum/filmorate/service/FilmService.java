@@ -29,6 +29,10 @@ public class FilmService extends CrudService<Film> {
         return filmStorage.getPopularFilms(count);
     }
 
+    public List<Film> getPopularFilms(int limit, int genreId, int year) {
+        return filmStorage.getPopularFilms(limit, genreId, year);
+    }
+
     @Override
     Storage<Film> getStorage() {
         return this.filmStorage;
