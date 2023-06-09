@@ -58,6 +58,8 @@ public class DBFilmStorage implements FilmStorage {
                 "query", "%" + query + "%"));
         String sqlQuery = "SELECT f.* FROM film f\n" +
                 "LEFT JOIN like_ l ON l.film_id = f.id\n" +
+                "LEFT JOIN film_directors fd on fd.film_id = f.id\n" +
+                "LEFT JOIN director d on d.id = fd.director_id\n" +
                 "WHERE 0=1\n";
         for (FilmSearchBy filmSearchBy : filmSearchByList) {
             switch (filmSearchBy) {
@@ -65,7 +67,8 @@ public class DBFilmStorage implements FilmStorage {
                     sqlQuery += "OR LOWER(f.name) like LOWER(:query)\n";
                     break;
                 case director:
-                    throw new RuntimeException("Director search not supported yet");
+                    sqlQuery += "OR LOWER(d.name) like LOWER(:query)\n";
+                    break;
                 default:
                     throw new RuntimeException(filmSearchBy + " not supported");
             }
