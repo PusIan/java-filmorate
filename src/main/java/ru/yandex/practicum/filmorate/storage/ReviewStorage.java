@@ -8,7 +8,7 @@ public interface ReviewStorage extends Storage<Review> {
 
     List<Review> getReviewsByFilm(int filmId, int count);
 
-    void addReviewLikeOrDislike(int reviewId, int userId, boolean isLike);
+    int addReviewLikeOrDislike(int reviewId, int userId, boolean isLike);
 
     int deleteReviewLikeOrDislike(int reviewId, int userId, boolean isLike);
 

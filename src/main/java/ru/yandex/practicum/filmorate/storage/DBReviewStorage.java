@@ -108,26 +108,32 @@ public class DBReviewStorage implements ReviewStorage {
      * При лайке/дизлайке накручиваем/скручиваем useful у отзыва.
      */
     @Override
-    public void addReviewLikeOrDislike(int userId, int reviewId, boolean isLike) {
+    public int addReviewLikeOrDislike(int reviewId, int userId, boolean isLike) {
         String insertLike = "INSERT INTO review_likes (user_id, review_id, is_like) VALUES (?, ?, ?)";
-        jdbcTemplate.update(insertLike, userId, reviewId, isLike);
-        updateUseful(reviewId, isLike);
+        return updateUsefulAfterUpdate(insertLike, userId, reviewId, isLike);
+    }
+
+    /**
+     * Запрос для лайка и обновление useful.
+     * @param query     удаление или вставка
+     * @return           записей изменено
+     */
+    private int updateUsefulAfterUpdate(String query, int userId, int reviewId, boolean isLike) {
+        String plusMinus = isLike ? "+1" : "-1";
+        String updUseful = "UPDATE reviews SET useful = useful" + plusMinus + " WHERE review_id=?";
+        int returnCount = jdbcTemplate.update(query, userId, reviewId, isLike);
+        if (returnCount != 0) {
+            jdbcTemplate.update(updUseful, reviewId);
+        }
+        return returnCount;
     }
 
     /**
      * При удалении лайка/дизлайка скручиваем/накручиваем useful у отзыва.
      */
     @Override
-    public int deleteReviewLikeOrDislike(int userId, int reviewId, boolean isLike) {
+    public int deleteReviewLikeOrDislike(int reviewId, int userId, boolean isLike) {
         String deleteLike = "DELETE FROM review_likes WHERE user_id=? AND review_id=? AND is_like=?";
-        int returnCount = jdbcTemplate.update(deleteLike, userId, reviewId, isLike);
-        updateUseful(reviewId, !isLike);
-        return returnCount;
-    }
-
-    private void updateUseful(int reviewId, boolean isLike) {
-        String plusMinus = isLike ? "+1" : "-1";
-        String updReview = "UPDATE reviews SET useful = useful" + plusMinus + " WHERE review_id=?";
-        jdbcTemplate.update(updReview, reviewId);
+        return updateUsefulAfterUpdate(deleteLike, userId, reviewId, isLike);
     }
 }
