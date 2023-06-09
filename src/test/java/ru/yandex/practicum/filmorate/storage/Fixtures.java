@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -79,4 +76,14 @@ public class Fixtures {
     public static RatingMpa getRatingMpa() {
         return getAllRatingMpa().get(0);
     }
+
+    public static Review getReview(int userId, int filmId) {
+        return new Review(1,
+                "content",
+                true,
+                userId,
+                filmId,
+                0);
+    }
+
 }

@@ -3,11 +3,11 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 
 import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, of = {"reviewId"})
 public class Review extends Entity {
     private Integer reviewId;
     @NonNull
@@ -35,5 +35,22 @@ public class Review extends Entity {
     @Override
     public Integer getId() {
         return getReviewId();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Review)) return false;
+        Review review = (Review) o;
+        return getUseful() == review.getUseful() &&
+                getContent().equals(review.getContent()) &&
+                isIsPositive() == review.isIsPositive() &&
+                getUserId().equals(review.getUserId()) &&
+                getFilmId().equals(review.getFilmId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reviewId);
     }
 }
