@@ -42,4 +42,18 @@ public class RecommendServiceTest {
                 () -> assertThat(recommendService.recommend(entity2, data)).isEqualTo(List.of(3)),
                 () -> assertThat(recommendService.recommend(entity3, data)).isEqualTo(Collections.emptyList()));
     }
+
+    @Test
+    public void testRecommendEmptyCasesEmptyResult() {
+        Integer entity1 = 1;
+        Integer entity2 = 2;
+        HashMap<Integer, HashMap<Integer, Integer>> data = new HashMap<>();
+        data.put(entity1, new HashMap<>());
+        data.put(entity2, new HashMap<>());
+        assertAll(() -> assertThat(recommendService.recommend(entity1, data)).isEqualTo(Collections.emptyList()),
+                () -> assertThat(recommendService.recommend(entity2, data)).isEqualTo(Collections.emptyList()),
+                () -> assertThat(recommendService.recommend(-1, data)).isEqualTo(Collections.emptyList()),
+                () -> assertThat(recommendService.recommend(entity1, new HashMap<>())).isEqualTo(Collections.emptyList()),
+                () -> assertThat(recommendService.recommend(-1, new HashMap<>())).isEqualTo(Collections.emptyList()));
+    }
 }
