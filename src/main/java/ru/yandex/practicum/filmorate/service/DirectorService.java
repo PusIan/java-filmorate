@@ -12,6 +12,7 @@ import ru.yandex.practicum.filmorate.storage.Storage;
 public class DirectorService extends CrudService<Directors> {
 
     private final DirectorStorage directorStorage;
+
     @Override
     Storage<Directors> getStorage() {
         return this.directorStorage;
