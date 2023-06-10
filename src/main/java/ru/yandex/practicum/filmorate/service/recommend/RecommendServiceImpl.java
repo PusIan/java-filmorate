@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.recommend;
 
 import org.springframework.stereotype.Service;
 
@@ -19,8 +19,8 @@ import java.util.*;
 @Service
 public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
 
-    private final HashMap<Y, HashMap<Y, Double>> diff = new HashMap<>();
-    private final HashMap<Y, HashMap<Y, Integer>> freq = new HashMap<>();
+    private HashMap<Y, HashMap<Y, Double>> diff;
+    private HashMap<Y, HashMap<Y, Integer>> freq;
 
     @Override
     public List<Y> recommend(T entity, HashMap<T, HashMap<Y, Integer>> data) {
@@ -35,6 +35,8 @@ public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
      * Calculation of differences and frequencies matrices
      * */
     private void prepareDiffFreqMatrices(HashMap<T, HashMap<Y, Integer>> data) {
+        this.diff = new HashMap<>();
+        this.freq = new HashMap<>();
         /*
          * Based on the available data, we'll calculate the relationships between the items,
          * as well as the number of items' occurrences. For each user, we check his/her rating of the items
