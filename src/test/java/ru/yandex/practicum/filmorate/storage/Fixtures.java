@@ -33,7 +33,7 @@ public class Fixtures {
     public static Film getFilm3() {
         return new Film(2,
                 "Film 3",
-                "Description 2",
+                "Description 3",
                 Date.valueOf(LocalDate.now().minusDays(5)),
                 201,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
