@@ -5,5 +5,4 @@ import ru.yandex.practicum.filmorate.model.Entity;
 
 @Slf4j
 public abstract class CrudService<T extends Entity> extends WriteService<T> {
-    public abstract void delete(int id);
 }
