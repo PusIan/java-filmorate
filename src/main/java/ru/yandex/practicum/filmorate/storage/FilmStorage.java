@@ -12,4 +12,6 @@ public interface FilmStorage extends Storage<Film> {
     void deleteLike(int userId, int filmId);
 
     List<Film> getFilmsByIds(List<Integer> filmIds);
+
+    List<Film> filmsDirectorSorted(int directorId, String sort);
 }
