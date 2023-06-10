@@ -52,6 +52,17 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsByIds(List<Integer> filmIds) {
+        SqlParameterSource parameters = new MapSqlParameterSource("filmIds", filmIds);
+        String sqlQuery = "SELECT * FROM film WHERE id IN (:filmIds)";
+        return namedParameterJdbcTemplate.query(
+                sqlQuery,
+                parameters,
+                this::mapRowToFilm
+        );
+    }
+
+    @Override
     public List<Film> filmsDirectorSorted(int directorId, String sort) {
         if (sort.equals("year")) {
             String sqlQuery = "SELECT f.* FROM film f\n" +
