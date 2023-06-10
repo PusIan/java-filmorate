@@ -12,12 +12,6 @@ import ru.yandex.practicum.filmorate.storage.Storage;
 public class DirectorService extends CrudService<Directors> {
 
     private final DirectorStorage directorStorage;
-
-    @Override
-    public void delete(int id) {
-        this.directorStorage.delete(id);
-    }
-
     @Override
     Storage<Directors> getStorage() {
         return this.directorStorage;

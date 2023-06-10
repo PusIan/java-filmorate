@@ -43,9 +43,4 @@ public class UserService extends CrudService<User> {
     String getServiceType() {
         return User.class.getSimpleName();
     }
-
-    @Override
-    public void delete(int id) {
-        userStorage.delete(id);
-    }
 }

@@ -44,9 +44,4 @@ public class FilmService extends CrudService<Film> {
     String getServiceType() {
         return Film.class.getSimpleName();
     }
-
-    @Override
-    public void delete(int id) {
-        this.filmStorage.delete(id);
-    }
 }
