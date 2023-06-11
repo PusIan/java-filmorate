@@ -25,6 +25,8 @@ public class DBDirectorStorageTest {
     @AfterEach
     private void clear() {
         for (Directors director : directorStorage.getAll()) {
+            System.out.println(director);
+            System.out.println(director.getId());
             directorStorage.delete(director.getId());
         }
     }
