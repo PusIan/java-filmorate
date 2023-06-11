@@ -16,12 +16,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = ru.yandex.practicum.filmorate.web.starter.FilmorateApplication.class)
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class DBMpaStorageTest {
     private final RatingMpaStorage mpaStorage;
 
     @Test
+    @Transactional
     public void testGetMpaById() {
         RatingMpa ratingMpa = Fixtures.getRatingMpa();
         Optional<RatingMpa> ratingMpaOptional = mpaStorage.getById(ratingMpa.getId());
@@ -30,11 +30,13 @@ class DBMpaStorageTest {
     }
 
     @Test
+    @Transactional
     public void testGetAllMpa() {
         assertThat(mpaStorage.getAll()).isEqualTo(Fixtures.getAllRatingMpa());
     }
 
     @Test
+    @Transactional
     public void testGetMpaByIdNotExistentIdEmptyResult() {
         Optional<RatingMpa> mpaOptional = mpaStorage.getById(-1);
         assertThat(mpaOptional).isEmpty();

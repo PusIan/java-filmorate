@@ -16,13 +16,13 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @SpringBootTest(classes = ru.yandex.practicum.filmorate.web.starter.FilmorateApplication.class)
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DBDirectorStorageTest {
 
     private final DirectorStorage directorStorage;
 
     @Test
+    @Transactional
     public void testCreateGetDirector() {
         Directors directors = Fixtures.getDirector();
         Directors createDirector = directorStorage.create(Fixtures.getDirector());
@@ -31,6 +31,7 @@ public class DBDirectorStorageTest {
     }
 
     @Test
+    @Transactional
     public void testUpdateGetDirector() {
         Directors createDirector = directorStorage.create(Fixtures.getDirector());
         Directors directors = Fixtures.getDirector();
@@ -40,6 +41,7 @@ public class DBDirectorStorageTest {
     }
 
     @Test
+    @Transactional
     public void testDeleteFilm() {
         Directors createDirector = directorStorage.create(Fixtures.getDirector());
         directorStorage.delete(createDirector.getId());
@@ -47,6 +49,7 @@ public class DBDirectorStorageTest {
     }
 
     @Test
+    @Transactional
     public void testGetFilmAll() {
         Directors createDirector = directorStorage.create(Fixtures.getDirector());
         Directors createDirector2 = directorStorage.create(Fixtures.getDirector2());

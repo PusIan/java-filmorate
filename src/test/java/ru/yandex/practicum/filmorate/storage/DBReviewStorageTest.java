@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
 public class DBReviewStorageTest {
     private final ReviewStorage reviewStorage;
     private final FilmStorage filmStorage;
@@ -42,6 +41,7 @@ public class DBReviewStorageTest {
     }
 
     @Test
+    @Transactional
     public void shouldCreateUpdateDeleteReview() {
         Review review = setInputReview();
         Review createdReview = reviewStorage.create(review);
@@ -59,6 +59,7 @@ public class DBReviewStorageTest {
     }
 
     @Test
+    @Transactional
     public void shouldDelLikeAfterLike() {
         Review review = reviewStorage.create(setInputReview());
         User user = userStorage.create(Fixtures.getUser2());

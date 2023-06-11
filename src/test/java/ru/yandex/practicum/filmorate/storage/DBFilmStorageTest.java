@@ -23,7 +23,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Transactional
 public class DBFilmStorageTest {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
@@ -43,6 +42,7 @@ public class DBFilmStorageTest {
     }
 
     @Test
+    @Transactional
     public void testCreateGetFilm() {
         Film film = Fixtures.getFilm1();
         Film createdFilm = filmStorage.create(Fixtures.getFilm1());
@@ -51,6 +51,7 @@ public class DBFilmStorageTest {
     }
 
     @Test
+    @Transactional
     public void testUpdateGetFilm() {
         Film createdFilm = filmStorage.create(Fixtures.getFilm1());
         Film updatedFilm = Fixtures.getFilm2();
@@ -60,6 +61,7 @@ public class DBFilmStorageTest {
     }
 
     @Test
+    @Transactional
     public void testDeleteFilm() {
         Film createdFilm = filmStorage.create(Fixtures.getFilm1());
         filmStorage.delete(createdFilm.getId());
@@ -67,6 +69,7 @@ public class DBFilmStorageTest {
     }
 
     @Test
+    @Transactional
     public void testGetFilmAll() {
         Film createdFilm1 = filmStorage.create(Fixtures.getFilm1());
         Film createdFilm2 = filmStorage.create(Fixtures.getFilm2());
@@ -74,6 +77,7 @@ public class DBFilmStorageTest {
     }
 
     @Test
+    @Transactional
     public void testLikes() {
         Film createdFilm1 = filmStorage.create(Fixtures.getFilm1());
         Film createdFilm2 = filmStorage.create(Fixtures.getFilm2());
@@ -87,6 +91,7 @@ public class DBFilmStorageTest {
     }
 
     @Test
+    @Transactional
     public void testSortFromDirector() {
         Film createdFilm1 = filmStorage.create(Fixtures.getFilm3());
         Film createdFilm2 = filmStorage.create(Fixtures.getFilm2());
