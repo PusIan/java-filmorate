@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +20,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class DBDirectorStorageTest {
 
     private final DirectorStorage directorStorage;
-
-    @AfterEach
-    private void clear() {
-        for (Directors director : directorStorage.getAll()) {
-            System.out.println(director);
-            System.out.println(director.getId());
-            directorStorage.delete(director.getId());
-        }
-    }
 
     @Test
     @Transactional
