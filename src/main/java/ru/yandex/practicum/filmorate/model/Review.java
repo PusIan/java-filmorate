@@ -6,7 +6,6 @@ import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class Review extends Entity {
     private Integer reviewId;

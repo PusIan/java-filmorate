@@ -42,10 +42,7 @@ public class ReviewService extends CrudService<Review> {
 
     @Override
     public Review update(Review entity) {
-        int reviewId = entity.getId();
-        if (!reviewStorage.existsById(reviewId)) {
-            throw new NotFoundException("Review with id " + reviewId + " not found.");
-        }
+        validateIds(entity.getReviewId());
         checkFilmAndUser(entity);
         return super.update(entity);
     }
@@ -62,11 +59,8 @@ public class ReviewService extends CrudService<Review> {
 
     public void delete(int id) {
         log.trace("Delete entity with id={}.", id);
-        if (!reviewStorage.existsById(id)) {
-            throw new NotFoundException("Review with id " + id + " not found.");
-        } else {
-            reviewStorage.delete(id);
-        }
+        validateIds(id);
+        reviewStorage.delete(id);
     }
 
     public List<Review> getReviewByFilmOrAll(int filmId, int count) {

@@ -1,13 +1,3 @@
-drop table if exists review_likes;
-drop table if exists reviews;
-drop table if exists like_;
-drop table if exists friend_request;
-drop table if exists film_genre;
-drop table if exists film;
-drop table if exists rating_mpa;
-drop table if exists user_;
-drop table if exists genre;
-
 
 CREATE TABLE IF NOT EXISTS rating_mpa
 (
