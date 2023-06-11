@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(classes = ru.yandex.practicum.filmorate.web.starter.FilmorateApplication.class)
 @AutoConfigureTestDatabase
@@ -95,9 +96,9 @@ public class DBFilmStorageTest {
         filmStorage.addLike(createdUser.getId(), createdFilm1.getId());
         List<Film> manualSort = Stream.of(createdFilm1, createdFilm2)
                 .sorted(Comparator.comparing(Film::getReleaseDate).reversed()).collect(Collectors.toList());
-        assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "year"))
-                .isEqualTo(manualSort);
-        assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "likes"))
-                .isEqualTo(List.of(createdFilm1, createdFilm2));
+        assertAll(() -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "year"))
+                        .isEqualTo(manualSort),
+                () -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "likes"))
+                        .isEqualTo(List.of(createdFilm1, createdFilm2)));
     }
 }
