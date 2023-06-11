@@ -110,6 +110,29 @@ public class DBFilmStorageTest {
 
     @Test
     @Transactional
+    public void testGetFilmByIdsSimpleCaseCorrectResult() {
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Film film1 = filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film film2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
+        Film film3 = filmStorage.create(Fixtures.getFilm3(List.of(director1)));
+        List<Film> expectedFilmList = List.of(film2, film3);
+        List<Film> actualFilmList = filmStorage.getFilmsByIds(
+                expectedFilmList.stream().map(Film::getId).collect(Collectors.toList()));
+        assertThat(actualFilmList).isEqualTo(expectedFilmList);
+    }
+
+    @Test
+    @Transactional
+    public void testGetFilmByIdsSimpleCaseEmptyResult() {
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Film film1 = filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film film2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
+        List<Film> actualFilmList = filmStorage.getFilmsByIds(List.of(-1));
+        assertThat(actualFilmList).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    @Transactional
     public void testFilmSearchByTitle() {
         filmStorage.create(Fixtures.getFilm1());
         Film createdFilm2 = filmStorage.create(Fixtures.getFilm2());
