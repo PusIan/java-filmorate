@@ -143,8 +143,9 @@ public class DBFilmStorageTest {
     @Transactional
     public void testFilmSearchByDirector() {
         Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Directors director2 = directorStorage.create(Fixtures.getDirector2());
         filmStorage.create(Fixtures.getFilm1(List.of(director1)));
-        Film createdFilm2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
+        Film createdFilm2 = filmStorage.create(Fixtures.getFilm2(List.of(director2)));
         List<Film> expectedFilmList = List.of(createdFilm2);
         List<Film> actualFilmList = filmStorage.searchFilms(
                 createdFilm2.getDirectors().get(0).getName(),
