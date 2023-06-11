@@ -35,9 +35,9 @@ public class ReviewService extends CrudService<Review> {
 
     @Override
     public Review create(Review entity) {
-         checkFilmAndUser(entity);
-         entity.setUseful(0);
-         return super.create(entity);
+        checkFilmAndUser(entity);
+        entity.setUseful(0);
+        return super.create(entity);
     }
 
     @Override

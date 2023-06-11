@@ -13,7 +13,7 @@ import java.util.List;
 @RequestMapping("/reviews")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ReviewController {
-    private  final ReviewService reviewService;
+    private final ReviewService reviewService;
 
     @PostMapping
     public Review create(@Valid @RequestBody Review review) {
@@ -36,8 +36,8 @@ public class ReviewController {
     }
 
     @GetMapping
-    public List<Review> getByFilmId(@RequestParam (defaultValue = "0") int filmId,
-            @RequestParam (defaultValue = "10") int count) {
+    public List<Review> getByFilmId(@RequestParam(defaultValue = "0") int filmId,
+                                    @RequestParam(defaultValue = "10") int count) {
         return reviewService.getReviewByFilmOrAll(filmId, count);
     }
 

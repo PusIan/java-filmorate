@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.validation.constraints.NotBlank;
 import java.util.Objects;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor(force = true)
 public class Review extends Entity {
     private Integer reviewId;
     @NonNull
