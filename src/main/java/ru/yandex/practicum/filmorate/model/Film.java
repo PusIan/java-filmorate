@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.sql.Date;
+import java.util.Calendar;
 import java.util.List;
 
 @Data
@@ -20,4 +21,12 @@ public class Film extends Entity {
     private Integer duration;
     private List<Genre> genres;
     private RatingMpa mpa;
+    private List<Directors> directors;
+
+    public int getYear() {
+        Calendar calendar = Calendar.getInstance();
+
+        calendar.setTime(releaseDate);
+        return calendar.get(Calendar.YEAR);
+    }
 }
