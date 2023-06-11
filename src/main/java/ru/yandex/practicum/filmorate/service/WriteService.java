@@ -30,4 +30,5 @@ public abstract class WriteService<T extends Entity> extends ReadService<T> {
         log.trace("Delete entity {}", entity);
         this.getStorage().delete(entity);
     }
+
 }
