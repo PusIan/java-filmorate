@@ -1,8 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +25,6 @@ public class DBReviewStorageTest {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final DirectorStorage directorStorage;
-
-    @BeforeAll
-    private void create() {
-        directorStorage.create(Fixtures.getDirector());
-        directorStorage.create(Fixtures.getDirector2());
-    }
-
-    @AfterAll
-    private void clear() {
-        directorStorage.delete(Fixtures.getDirector().getId());
-        directorStorage.delete(Fixtures.getDirector2().getId());
-    }
 
     @Test
     @Transactional
@@ -72,7 +58,7 @@ public class DBReviewStorageTest {
     private Review setInputReview() {
         User createdUser = userStorage.create(Fixtures.getUser1());
         Directors director = directorStorage.create(Fixtures.getDirector());
-        Film film = Fixtures.getFilm1();
+        Film film = Fixtures.getFilm1(List.of(director));
         film.setDirectors(List.of(director));
         Film createdFilm = filmStorage.create(film);
         return Fixtures.getReview(createdUser.getId(), createdFilm.getId());

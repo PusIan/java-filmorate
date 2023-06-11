@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Fixtures {
-    public static Film getFilm1() {
+    public static Film getFilm1(List<Directors> directors) {
         return new Film(1,
                 "Film 1",
                 "Description 1",
@@ -16,10 +16,12 @@ public class Fixtures {
                 100,
                 new ArrayList<>(List.of(new Genre(1, "Комедия"), new Genre(2, "Драма"))),
                 new RatingMpa(1, "G"),
-                List.of(new Directors(1, "Bortko")));
+//                List.of(new Directors(1, "Bortko"))
+                directors
+        );
     }
 
-    public static Film getFilm2() {
+    public static Film getFilm2(List<Directors> directors) {
         return new Film(2,
                 "Film 2",
                 "Description 2",
@@ -27,10 +29,12 @@ public class Fixtures {
                 200,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
                 new RatingMpa(2, "PG"),
-                List.of(new Directors(2, "Trail")));
+//                List.of(new Directors(2, "Trail"))
+                directors
+        );
     }
 
-    public static Film getFilm3() {
+    public static Film getFilm3(List<Directors> directors) {
         return new Film(2,
                 "Film 3",
                 "Description 2",
@@ -38,7 +42,9 @@ public class Fixtures {
                 201,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
                 new RatingMpa(2, "PG"),
-                List.of(new Directors(2, "Trail")));
+//                List.of(new Directors(2, "Trail"))
+                directors
+        );
     }
 
     public static User getUser1() {
