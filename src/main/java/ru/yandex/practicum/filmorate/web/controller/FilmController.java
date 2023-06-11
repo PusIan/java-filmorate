@@ -61,4 +61,12 @@ public class FilmController {
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<FilmResponseDto> getFilmDirectorFromCountLikeOrYear(@PathVariable int directorId, @RequestParam(name = "sortBy") String sorted) {
+        return this.filmService.filmsDirectorSorted(directorId, sorted)
+                .stream()
+                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .collect(Collectors.toList());
+    }
 }

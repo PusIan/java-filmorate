@@ -1,7 +1,10 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,17 +12,35 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest(classes = ru.yandex.practicum.filmorate.web.starter.FilmorateApplication.class)
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DBFilmStorageTest {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+
+    private final DirectorStorage directorStorage;
+
+    @BeforeAll
+    private void create() {
+        directorStorage.create(Fixtures.getDirector());
+        directorStorage.create(Fixtures.getDirector2());
+    }
+
+    @AfterAll
+    private void clear() {
+        directorStorage.delete(Fixtures.getDirector().getId());
+        directorStorage.delete(Fixtures.getDirector2().getId());
+    }
 
     @Test
     @Transactional
@@ -68,5 +89,17 @@ public class DBFilmStorageTest {
         filmStorage.deleteLike(createdUser.getId(), createdFilm1.getId());
         filmStorage.addLike(createdUser.getId(), createdFilm2.getId());
         assertThat(filmStorage.getPopularFilms(1, Optional.empty(), Optional.empty())).isEqualTo(List.of(createdFilm2));
+    }
+
+    @Test
+    @Transactional
+    public void testSortFromDirector() {
+        Film createdFilm1 = filmStorage.create(Fixtures.getFilm3());
+        Film createdFilm2 = filmStorage.create(Fixtures.getFilm2());
+        filmStorage.addLike(userStorage.create(Fixtures.getUser1()).getId(), createdFilm1.getId());
+        List<Film> manualSort = Stream.of(createdFilm1, createdFilm2)
+                .sorted(Comparator.comparing(Film::getReleaseDate).reversed()).collect(Collectors.toList());
+        assertThat(filmStorage.filmsDirectorSorted(2, "year")).isEqualTo(manualSort);
+        assertThat(filmStorage.filmsDirectorSorted(2, "likes")).isEqualTo(List.of(createdFilm1, createdFilm2));
     }
 }

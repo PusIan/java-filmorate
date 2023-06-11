@@ -14,7 +14,13 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmService extends CrudService<Film> {
     private final FilmStorage filmStorage;
+    private final DirectorService directorService;
     private final UserService userService;
+
+    public List<Film> filmsDirectorSorted(int directorId, String sort) {
+        directorService.validateIds(directorId);
+        return filmStorage.filmsDirectorSorted(directorId, sort);
+    }
 
     public void addLike(int userId, int filmId) {
         this.userService.validateIds(userId);
