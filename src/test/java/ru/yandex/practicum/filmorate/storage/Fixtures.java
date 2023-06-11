@@ -15,7 +15,8 @@ public class Fixtures {
                 Date.valueOf(LocalDate.now()),
                 100,
                 new ArrayList<>(List.of(new Genre(1, "Комедия"), new Genre(2, "Драма"))),
-                new RatingMpa(1, "G"));
+                new RatingMpa(1, "G"),
+                List.of(new Directors(1, "Bortko")));
     }
 
     public static Film getFilm2() {
@@ -25,7 +26,19 @@ public class Fixtures {
                 Date.valueOf(LocalDate.now().minusDays(1)),
                 200,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
-                new RatingMpa(2, "PG"));
+                new RatingMpa(2, "PG"),
+                List.of(new Directors(2, "Trail")));
+    }
+
+    public static Film getFilm3() {
+        return new Film(2,
+                "Film 3",
+                "Description 2",
+                Date.valueOf(LocalDate.now().minusDays(5)),
+                201,
+                new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
+                new RatingMpa(2, "PG"),
+                List.of(new Directors(2, "Trail")));
     }
 
     public static User getUser1() {
@@ -84,6 +97,20 @@ public class Fixtures {
                 userId,
                 filmId,
                 0);
+    }
+
+    public static List<Directors> getDirectorList() {
+        return List.of(new Directors(1, "Luck"),
+                new Directors(2, "Bortko"),
+                new Directors(3, "Reuel Tolkien"));
+    }
+
+    public static Directors getDirector() {
+        return new Directors(1, "Bortko");
+    }
+
+    public static Directors getDirector2() {
+        return new Directors(2, "Trail");
     }
 
 }

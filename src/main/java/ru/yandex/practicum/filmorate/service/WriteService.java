@@ -26,4 +26,9 @@ public abstract class WriteService<T extends Entity> extends ReadService<T> {
                 .orElseThrow(() -> getNoDataFoundException(entity.getId()));
     }
 
+    public void delete(int entity) {
+        log.trace("Delete entity {}", entity);
+        this.getStorage().delete(entity);
+    }
+
 }

@@ -2,8 +2,10 @@ package ru.yandex.practicum.filmorate.web.convertor;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.web.dto.response.DirectorResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.response.FilmResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.response.GenreResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.response.RatingMpaResponseDto;
@@ -34,6 +36,16 @@ public class FilmToFilmResponseDto implements Converter<Film, FilmResponseDto> {
                 genreResponseDtos.add(genreResponseDto);
             }
             filmResponseDto.setGenres(genreResponseDtos);
+        }
+        List<DirectorResponseDto> directorResponseDtos = new ArrayList<>();
+        if (film.getDirectors() != null) {
+            for (Directors director : film.getDirectors()) {
+                DirectorResponseDto directorResponseDto = new DirectorResponseDto();
+                directorResponseDto.setId(director.getId());
+                directorResponseDto.setName(director.getName());
+                directorResponseDtos.add(directorResponseDto);
+            }
+            filmResponseDto.setDirectors(directorResponseDtos);
         }
         return filmResponseDto;
     }
