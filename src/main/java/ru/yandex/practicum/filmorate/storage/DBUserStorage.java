@@ -45,9 +45,9 @@ public class DBUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete(int id) {
-        String sqlQuery = "DELETE FROM user_ WHERE id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+    public void delete(int userId) {
+        jdbcTemplate.update("DELETE FROM user_ WHERE id = ?", userId);
+        jdbcTemplate.update("DELETE FROM friend_request WHERE user_initiator_id = ? OR user_friend_id = ?", userId, userId);
     }
 
     @Override
