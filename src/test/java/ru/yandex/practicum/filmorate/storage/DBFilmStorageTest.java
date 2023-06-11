@@ -14,6 +14,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,11 +81,11 @@ public class DBFilmStorageTest {
         Film createdFilm2 = filmStorage.create(Fixtures.getFilm2(List.of(director2)));
         User createdUser = userStorage.create(Fixtures.getUser1());
         filmStorage.addLike(createdUser.getId(), createdFilm1.getId());
-        assertThat(filmStorage.getPopularFilms(1)).isEqualTo(List.of(createdFilm1));
+        assertThat(filmStorage.getPopularFilms(1, Optional.empty(), Optional.empty())).isEqualTo(List.of(createdFilm1));
 
         filmStorage.deleteLike(createdUser.getId(), createdFilm1.getId());
         filmStorage.addLike(createdUser.getId(), createdFilm2.getId());
-        assertThat(filmStorage.getPopularFilms(1)).isEqualTo(List.of(createdFilm2));
+        assertThat(filmStorage.getPopularFilms(1, Optional.empty(), Optional.empty())).isEqualTo(List.of(createdFilm2));
     }
 
     @Test

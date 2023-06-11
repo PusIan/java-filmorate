@@ -28,15 +28,28 @@ public class DBFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RatingMpaStorage ratingMpaStorage;
+    private final GenreStorage genreStorage;
 
     @Override
-    public List<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
         String sqlQuery = "SELECT f.* FROM film f\n" +
                 "LEFT JOIN like_ l ON l.film_id = f.id\n" +
                 "GROUP BY f.id\n" +
                 "ORDER BY COUNT(l.id) DESC\n" +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+        List<Film> filmsSortedByLikes = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+
+        if (genreId.isPresent()) {
+            Genre genre = genreStorage
+                    .getById(genreId.get())
+                    .orElseThrow();
+
+            filmsSortedByLikes.removeIf(film -> !film.getGenres().contains(genre));
+        }
+        if (year.isPresent()) {
+            filmsSortedByLikes.removeIf(film -> film.getYear() != year.get());
+        }
+        return filmsSortedByLikes;
     }
 
     @Override

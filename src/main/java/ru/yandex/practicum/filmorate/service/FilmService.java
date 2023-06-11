@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -31,8 +32,8 @@ public class FilmService extends CrudService<Film> {
         this.filmStorage.deleteLike(userId, filmId);
     }
 
-    public List<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        return filmStorage.getPopularFilms(count, genreId, year);
     }
 
     @Override
