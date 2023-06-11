@@ -11,10 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.model.Directors;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -62,6 +59,32 @@ public class DBFilmStorage implements FilmStorage {
     public void deleteLike(int userId, int filmId) {
         String sqlQuery = "DELETE FROM like_ WHERE film_id=? AND user_id=?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, List<FilmSearchBy> filmSearchByList) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(
+                "query", "%" + query + "%"));
+        String sqlQuery = "SELECT f.* FROM film f\n" +
+                "LEFT JOIN like_ l ON l.film_id = f.id\n" +
+                "LEFT JOIN film_directors fd on fd.film_id = f.id\n" +
+                "LEFT JOIN director d on d.id = fd.director_id\n" +
+                "WHERE 0=1\n";
+        for (FilmSearchBy filmSearchBy : filmSearchByList) {
+            switch (filmSearchBy) {
+                case title:
+                    sqlQuery += "OR LOWER(f.name) like LOWER(:query)\n";
+                    break;
+                case director:
+                    sqlQuery += "OR LOWER(d.name) like LOWER(:query)\n";
+                    break;
+                default:
+                    throw new RuntimeException(filmSearchBy + " not supported");
+            }
+        }
+        sqlQuery += "GROUP BY f.id\n" +
+                "ORDER BY COUNT(l.id) DESC\n";
+        return namedParameterJdbcTemplate.query(sqlQuery, sqlParameterSource, this::mapRowToFilm);
     }
 
     @Override

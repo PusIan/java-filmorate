@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.model.Directors;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collections;
@@ -107,9 +108,10 @@ public class DBFilmStorageTest {
     @Test
     @Transactional
     public void testGetFilmByIdsSimpleCaseCorrectResult() {
-        Film film1 = filmStorage.create(Fixtures.getFilm1());
-        Film film2 = filmStorage.create(Fixtures.getFilm2());
-        Film film3 = filmStorage.create(Fixtures.getFilm3());
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Film film1 = filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film film2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
+        Film film3 = filmStorage.create(Fixtures.getFilm3(List.of(director1)));
         List<Film> expectedFilmList = List.of(film2, film3);
         List<Film> actualFilmList = filmStorage.getFilmsByIds(
                 expectedFilmList.stream().map(Film::getId).collect(Collectors.toList()));
@@ -119,9 +121,51 @@ public class DBFilmStorageTest {
     @Test
     @Transactional
     public void testGetFilmByIdsSimpleCaseEmptyResult() {
-        Film film1 = filmStorage.create(Fixtures.getFilm1());
-        Film film2 = filmStorage.create(Fixtures.getFilm2());
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Film film1 = filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film film2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
         List<Film> actualFilmList = filmStorage.getFilmsByIds(List.of(-1));
         assertThat(actualFilmList).isEqualTo(Collections.emptyList());
+    }
+
+    @Test
+    @Transactional
+    public void testFilmSearchByTitle() {
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film createdFilm2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
+        List<Film> expectedFilmList = List.of(createdFilm2);
+        List<Film> actualFilmList = filmStorage.searchFilms(createdFilm2.getName(),
+                List.of(FilmSearchBy.title));
+        assertThat(actualFilmList).isEqualTo(expectedFilmList);
+    }
+
+    @Test
+    @Transactional
+    public void testFilmSearchByDirector() {
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Directors director2 = directorStorage.create(Fixtures.getDirector2());
+        filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film createdFilm2 = filmStorage.create(Fixtures.getFilm2(List.of(director2)));
+        List<Film> expectedFilmList = List.of(createdFilm2);
+        List<Film> actualFilmList = filmStorage.searchFilms(
+                createdFilm2.getDirectors().get(0).getName(),
+                List.of(FilmSearchBy.director));
+        assertThat(actualFilmList).isEqualTo(expectedFilmList);
+    }
+
+    @Test
+    @Transactional
+    public void testFilmSearchByAllCorrectOrder() {
+        Directors director1 = directorStorage.create(Fixtures.getDirector());
+        Film film1 = filmStorage.create(Fixtures.getFilm1(List.of(director1)));
+        Film film2 = filmStorage.create(Fixtures.getFilm2(List.of(director1)));
+        Film film3 = filmStorage.create(Fixtures.getFilm3(List.of(director1)));
+        User user1 = userStorage.create(Fixtures.getUser1());
+        filmStorage.addLike(user1.getId(), film3.getId());
+        List<Film> expectedFilmList = List.of(film3, film1, film2);
+        List<Film> actualFilmList = filmStorage.searchFilms("film",
+                List.of(FilmSearchBy.values()));
+        assertThat(actualFilmList).isEqualTo(expectedFilmList);
     }
 }

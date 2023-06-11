@@ -62,6 +62,14 @@ public class FilmController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/search")
+    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam String by) {
+        return this.filmService.searchFilms(query, by)
+                .stream()
+                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/director/{directorId}")
     public Collection<FilmResponseDto> getFilmDirectorFromCountLikeOrYear(@PathVariable int directorId, @RequestParam(name = "sortBy") String sorted) {
         return this.filmService.filmsDirectorSorted(directorId, sorted)
