@@ -14,5 +14,5 @@ public interface ReviewStorage extends Storage<Review> {
 
     List<Review> getTopReviews(int count);
 
-    //boolean isReviewLiked(int reviewId, int userId, boolean isLike);
+    boolean isReviewLiked(int reviewId, int userId, boolean isLike);
 }

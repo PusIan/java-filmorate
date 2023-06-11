@@ -137,14 +137,14 @@ public class DBReviewStorage implements ReviewStorage {
         return updateUsefulAfterUpdate(deleteLike, userId, reviewId, isLike);
     }
 
-/*    @Override
+    @Override
     public boolean isReviewLiked(int reviewId, int userId, boolean isLike) {
         String findLike = "SELECT (EXISTS (SELECT 1 FROM review_likes WHERE "
                         + "review_id=? AND user_id=? AND is_like=?))";
         SqlRowSet srs = jdbcTemplate.queryForRowSet(findLike, reviewId, userId, isLike);
         srs.next();
         return srs.getBoolean(1);
-    }*/
+    }
 
 
 }

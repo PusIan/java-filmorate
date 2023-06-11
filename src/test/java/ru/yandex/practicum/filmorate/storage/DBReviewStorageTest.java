@@ -41,9 +41,9 @@ public class DBReviewStorageTest {
         Review review = reviewStorage.create(setInputReview());
         User user = userStorage.create(Fixtures.getUser2());
         reviewStorage.addReviewLikeOrDislike(review.getReviewId(), user.getId(), true);
-        assertTrue(reviewStorage.likeExists(review.getReviewId(), user.getId(), true));
+        assertTrue(reviewStorage.isReviewLiked(review.getReviewId(), user.getId(), true));
         reviewStorage.deleteReviewLikeOrDislike(review.getReviewId(), user.getId(), true);
-        assertFalse(reviewStorage.likeExists(review.getReviewId(), user.getId(), true));
+        assertFalse(reviewStorage.isReviewLiked(review.getReviewId(), user.getId(), true));
     }
 
     private Review setInputReview() {
