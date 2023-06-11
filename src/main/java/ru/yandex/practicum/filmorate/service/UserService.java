@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.model.UserFilmLike;
+import ru.yandex.practicum.filmorate.service.recommend.RecommendFilmService;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
@@ -18,7 +19,7 @@ import java.util.List;
 public class UserService extends CrudService<User> {
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
-    private final RecommendServiceImpl<Integer, Integer> recommendService;
+    private final RecommendFilmService recommendService;
 
     public void addFriend(int userId, int friendId) {
         this.validateIds(userId, friendId);
