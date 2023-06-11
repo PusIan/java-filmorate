@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class DBDirectorStorageTest {
 
     private final DirectorStorage directorStorage;
 
-    @AfterAll
+    @AfterEach
     private void clear() {
         for (Directors director : directorStorage.getAll()) {
             directorStorage.delete(director.getId());
@@ -58,7 +58,7 @@ public class DBDirectorStorageTest {
 
     @Test
     @Transactional
-    public void testGetFilmAll() {
+    public void testGetDirectorsAll() {
         Directors createDirector = directorStorage.create(Fixtures.getDirector());
         Directors createDirector2 = directorStorage.create(Fixtures.getDirector2());
         assertThat(directorStorage.getAll()).isEqualTo(List.of(createDirector, createDirector2));
