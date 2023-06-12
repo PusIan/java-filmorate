@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
@@ -24,10 +25,10 @@ public class DBEventStorageTest {
     @Test
     @Transactional
     public void testCreateEventAndGetFeed() {
-        userStorage.create(Fixtures.getUser1());
-        Event event = Fixtures.getEvent();
+        User user = userStorage.create(Fixtures.getUser1());
+        Event event = Fixtures.getEvent(user.getId());
         eventStorage.create(event);
-        List<Event> events = eventStorage.getFeed(event.getUserId());
+        List<Event> events = eventStorage.getFeed(user.getId());
 
         assertEquals(events.size(), 1);
         assertTrue(events.contains(event));
