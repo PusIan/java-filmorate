@@ -18,4 +18,6 @@ public interface FilmStorage extends Storage<Film> {
     List<Film> getFilmsByIds(List<Integer> filmIds);
 
     List<Film> filmsDirectorSorted(int directorId, String sort);
+
+    List<Film> getCommonFilms(int userId, int friendId);
 }

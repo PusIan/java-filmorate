@@ -77,4 +77,13 @@ public class FilmController {
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/common")
+    public Collection<FilmResponseDto> getCommonFilms(@RequestParam(name = "userId") int userId,
+                                     @RequestParam(name = "friendId") int friendId) {
+        return this.filmService.getCommonFilms(userId, friendId)
+                .stream()
+                .map(film -> conversionService.convert(film, FilmResponseDto.class))
+                .collect(Collectors.toList());
+    }
 }

@@ -194,6 +194,20 @@ public class DBFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getCommonFilms(int userId, int friendId) {
+        String sql = "SELECT f.* " +
+                "FROM like_ l1 " +
+                "INNER JOIN like_ l2 ON l2.film_id = l1.film_id " +
+                "INNER JOIN film f ON l1.film_id = f.id " +
+                "INNER JOIN like_ total_film_likes ON total_film_likes.film_id = f.id " +
+                "WHERE l1.user_id = ? " +
+                "  AND l2.user_id = ? " +
+                "GROUP BY f.id " +
+                "ORDER BY COUNT(total_film_likes.id) DESC";
+        return jdbcTemplate.query(sql, this::mapRowToFilm, userId, friendId);
+    }
+
     private void saveFilmGenre(Integer filmId, List<Genre> genreList) {
         if (genreList != null && !genreList.isEmpty()) {
             String sqlQueryDeleteGenreForNotExistentIds = "DELETE FROM film_genre WHERE film_id = :filmId " +
