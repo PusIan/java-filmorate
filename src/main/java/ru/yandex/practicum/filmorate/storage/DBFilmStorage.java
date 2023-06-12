@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -51,8 +52,12 @@ public class DBFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(int userId, int filmId) {
-        String sqlQuery = "INSERT INTO like_ (film_id, user_id) VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
+        String sqlQueryForLikes = "SELECT user_id FROM like_ WHERE film_id = ?";
+        List<Integer> likes = jdbcTemplate.queryForList(sqlQueryForLikes, Integer.class, filmId);
+        if (!likes.contains(userId)) {
+            String sqlQuery = "INSERT INTO like_ (film_id, user_id) VALUES (?, ?)";
+            jdbcTemplate.update(sqlQuery, filmId, userId);
+        }
     }
 
     @Override
