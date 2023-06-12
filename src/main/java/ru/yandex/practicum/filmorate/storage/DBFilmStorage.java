@@ -197,18 +197,14 @@ public class DBFilmStorage implements FilmStorage {
     @Override
     public List<Film> getCommonFilms(int userId, int friendId) {
         String sql = "SELECT f.* " +
-                "FROM film f " +
-                "LEFT JOIN like_ l ON f.id = l.film_id " +
-                "WHERE f.id IN " +
-                "    (SELECT l1.film_id " +
-                "     FROM like_ l1 " +
-                "     WHERE l1.film_id IN " +
-                "         (SELECT l2.film_id " +
-                "          FROM like_ l2 " +
-                "          WHERE l2.user_id = ?) " +
-                "       AND l1.user_id = ?) " +
+                "FROM like_ l1 " +
+                "INNER JOIN like_ l2 ON l2.film_id = l1.film_id " +
+                "INNER JOIN film f ON l1.film_id = f.id " +
+                "INNER JOIN like_ total_film_likes ON total_film_likes.film_id = f.id " +
+                "WHERE l1.user_id = ? " +
+                "  AND l2.user_id = ? " +
                 "GROUP BY f.id " +
-                "ORDER BY COUNT(l.id) DESC";
+                "ORDER BY COUNT(total_film_likes.id) DESC";
         return jdbcTemplate.query(sql, this::mapRowToFilm, userId, friendId);
     }
 
