@@ -78,6 +78,11 @@ public class FilmController {
                 .collect(Collectors.toList());
     }
 
+    @DeleteMapping("/{filmId}")
+    public void delete(@PathVariable int filmId) {
+        filmService.delete(filmId);
+    }
+
     @GetMapping("/common")
     public Collection<FilmResponseDto> getCommonFilms(@RequestParam(name = "userId") int userId,
                                      @RequestParam(name = "friendId") int friendId) {

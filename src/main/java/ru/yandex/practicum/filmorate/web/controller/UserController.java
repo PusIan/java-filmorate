@@ -89,4 +89,9 @@ public class UserController {
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());
     }
+
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable int userId) {
+        userService.delete(userId);
+    }
 }
