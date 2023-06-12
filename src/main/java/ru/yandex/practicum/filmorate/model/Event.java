@@ -13,7 +13,7 @@ public class Event extends Entity {
     private Integer eventId;
     private Long timestamp;
     private Integer userId;
-    private EventType eventType;
-    private Operation operation;
+    private EventTypeFeed eventType;
+    private OperationFeed operation;
     private Integer entityId;
 }

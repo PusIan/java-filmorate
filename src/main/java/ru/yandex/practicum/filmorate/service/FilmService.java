@@ -3,10 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.EventType;
+import ru.yandex.practicum.filmorate.model.EventTypeFeed;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Operation;
+import ru.yandex.practicum.filmorate.model.OperationFeed;
 import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
@@ -32,13 +32,13 @@ public class FilmService extends CrudService<Film> {
     public void addLike(int userId, int filmId) {
         this.userService.validateIds(userId);
         this.filmStorage.addLike(userId, filmId);
-        userService.addEvent(userId, EventType.LIKE, Operation.ADD, filmId);
+        userService.addEvent(userId, EventTypeFeed.LIKE, OperationFeed.ADD, filmId);
     }
 
     public void deleteLike(int userId, int filmId) {
         this.userService.validateIds(userId);
         this.filmStorage.deleteLike(userId, filmId);
-        userService.addEvent(userId, EventType.LIKE, Operation.REMOVE, filmId);
+        userService.addEvent(userId, EventTypeFeed.LIKE, OperationFeed.REMOVE, filmId);
     }
 
     public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {

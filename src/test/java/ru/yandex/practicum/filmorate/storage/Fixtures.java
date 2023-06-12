@@ -119,4 +119,12 @@ public class Fixtures {
         return new Directors(2, "Trail");
     }
 
+    public static Event getEvent() {
+        return new Event(1,
+                1686525331339L,
+                1,
+                EventTypeFeed.LIKE,
+                OperationFeed.ADD,
+                2);
+    }
 }

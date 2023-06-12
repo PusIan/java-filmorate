@@ -8,11 +8,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Event;
-import ru.yandex.practicum.filmorate.model.EventType;
-import ru.yandex.practicum.filmorate.model.Operation;
+import ru.yandex.practicum.filmorate.model.EventTypeFeed;
+import ru.yandex.practicum.filmorate.model.OperationFeed;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -32,7 +34,7 @@ public class DbEventStorage implements EventStorage {
                 .withTableName("EVENTS")
                 .usingGeneratedKeyColumns("EVENT_ID");
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("timestamp", event.getTimestamp())
+                .addValue("timestamp", Timestamp.valueOf(LocalDateTime.now()))
                 .addValue("user_id", event.getUserId())
                 .addValue("event_type", event.getEventType())
                 .addValue("operation", event.getOperation())
@@ -44,10 +46,10 @@ public class DbEventStorage implements EventStorage {
     private Event mapRowToEvent(ResultSet rs, int rowNum) throws SQLException {
         Event event = new Event();
         event.setEventId((rs.getInt("event_id")));
-        event.setTimestamp(rs.getLong("timestamp"));
+        event.setTimestamp(rs.getTimestamp("timestamp").getTime());
         event.setUserId(rs.getInt("user_id"));
-        event.setEventType(EventType.valueOf(rs.getString("event_type")));
-        event.setOperation(Operation.valueOf(rs.getString("operation")));
+        event.setEventType(EventTypeFeed.valueOf(rs.getString("event_type")));
+        event.setOperation(OperationFeed.valueOf(rs.getString("operation")));
         event.setEntityId(rs.getInt("entity_id"));
         return event;
     }
