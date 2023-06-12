@@ -28,28 +28,27 @@ public class DBFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RatingMpaStorage ratingMpaStorage;
-    private final GenreStorage genreStorage;
 
     @Override
     public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
         String sqlQuery = "SELECT f.* FROM film f\n" +
-                "LEFT JOIN like_ l ON l.film_id = f.id\n" +
-                "GROUP BY f.id\n" +
-                "ORDER BY COUNT(l.id) DESC\n" +
-                "LIMIT ?";
-        List<Film> filmsSortedByLikes = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
-
+                "LEFT JOIN like_ l ON l.film_id = f.id\n";
+        if (genreId.isPresent() | year.isPresent()) {
+            sqlQuery += "WHERE ";
+        }
         if (genreId.isPresent()) {
-            Genre genre = genreStorage
-                    .getById(genreId.get())
-                    .orElseThrow();
-
-            filmsSortedByLikes.removeIf(film -> !film.getGenres().contains(genre));
+            sqlQuery += genreId.get() + " IN (SELECT genre_id FROM film_genre WHERE film_id = f.id)\n";
+        }
+        if (genreId.isPresent() && year.isPresent()) {
+            sqlQuery += "AND ";
         }
         if (year.isPresent()) {
-            filmsSortedByLikes.removeIf(film -> film.getYear() != year.get());
+            sqlQuery += "EXTRACT(YEAR FROM CAST(f.release_date AS date)) = " + year.get() + "\n";
         }
-        return filmsSortedByLikes;
+        sqlQuery += "GROUP BY f.id\n" +
+                "ORDER BY COUNT(l.id) DESC\n" +
+                "LIMIT ?";
+        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
     }
 
     @Override
