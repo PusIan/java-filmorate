@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -11,24 +8,43 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Fixtures {
-    public static Film getFilm1() {
+    public static Film getFilm1(List<Directors> directors) {
         return new Film(1,
                 "Film 1",
                 "Description 1",
                 Date.valueOf(LocalDate.now()),
                 100,
                 new ArrayList<>(List.of(new Genre(1, "Комедия"), new Genre(2, "Драма"))),
-                new RatingMpa(1, "G"));
+                new RatingMpa(1, "G"),
+//                List.of(new Directors(1, "Bortko"))
+                directors
+        );
     }
 
-    public static Film getFilm2() {
+    public static Film getFilm2(List<Directors> directors) {
         return new Film(2,
                 "Film 2",
                 "Description 2",
                 Date.valueOf(LocalDate.now().minusDays(1)),
                 200,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
-                new RatingMpa(2, "PG"));
+                new RatingMpa(2, "PG"),
+//                List.of(new Directors(2, "Trail"))
+                directors
+        );
+    }
+
+    public static Film getFilm3(List<Directors> directors) {
+        return new Film(2,
+                "Film 3",
+                "Description 3",
+                Date.valueOf(LocalDate.now().minusDays(5)),
+                201,
+                new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
+                new RatingMpa(2, "PG"),
+//                List.of(new Directors(2, "Trail"))
+                directors
+        );
     }
 
     public static User getUser1() {
@@ -79,4 +95,28 @@ public class Fixtures {
     public static RatingMpa getRatingMpa() {
         return getAllRatingMpa().get(0);
     }
+
+    public static Review getReview(int userId, int filmId) {
+        return new Review(1,
+                "content",
+                true,
+                userId,
+                filmId,
+                0);
+    }
+
+    public static List<Directors> getDirectorList() {
+        return List.of(new Directors(1, "Luck"),
+                new Directors(2, "Bortko"),
+                new Directors(3, "Reuel Tolkien"));
+    }
+
+    public static Directors getDirector() {
+        return new Directors(1, "Bortko");
+    }
+
+    public static Directors getDirector2() {
+        return new Directors(2, "Trail");
+    }
+
 }
