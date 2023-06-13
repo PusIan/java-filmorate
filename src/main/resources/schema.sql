@@ -92,7 +92,6 @@ CREATE TABLE IF NOT EXISTS review_likes
 
 CREATE UNIQUE INDEX IF NOT EXISTS review_likes_uq_user_review on review_likes (user_id, review_id);
 
-
 CREATE TABLE IF NOT EXISTS events
 (
     event_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,

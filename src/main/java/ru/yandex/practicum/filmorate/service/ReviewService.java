@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.EventTypeFeed;
 import ru.yandex.practicum.filmorate.model.OperationFeed;
+
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
@@ -24,7 +25,6 @@ public class ReviewService extends CrudService<Review> {
     private final FilmStorage filmStorage;
     private final ReviewStorage reviewStorage;
     private final UserService userService;
-
 
     @Override
     String getServiceType() {
@@ -71,6 +71,7 @@ public class ReviewService extends CrudService<Review> {
         Optional<Review> review = reviewStorage.getById(id);
         review.ifPresent(value -> userService.addEvent(value.getUserId(), EventTypeFeed.REVIEW,
                 OperationFeed.REMOVE, value.getReviewId()));
+
         reviewStorage.delete(id);
     }
 
@@ -96,12 +97,12 @@ public class ReviewService extends CrudService<Review> {
     }
 
     private void checkReviewAndUser(int reviewId, int userId) {
-        Optional<Review> review = reviewStorage.getById(reviewId);
-        if (review.isEmpty()) {
-            throw new NotFoundException("Review with id " + reviewId + " not found.");
-        } else if (!userStorage.existsById(userId)) {
+        Review review = reviewStorage
+                .getById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Review with id " + reviewId + " not found."));
+        if (!userStorage.existsById(userId)) {
             throw new NotFoundException("User with id " + userId + " not found.");
-        } else if (review.get().getUserId() == userId) {
+        } else if (review.getUserId() == userId) {
             throw new NotFoundException("Users can not like or dislike their own reviews.");
         }
     }
