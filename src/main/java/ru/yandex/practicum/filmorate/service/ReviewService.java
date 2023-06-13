@@ -12,7 +12,6 @@ import ru.yandex.practicum.filmorate.storage.Storage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -85,12 +84,12 @@ public class ReviewService extends CrudService<Review> {
     }
 
     private void checkReviewAndUser(int reviewId, int userId) {
-        Optional<Review> review = reviewStorage.getById(reviewId);
-        if (review.isEmpty()) {
-            throw new NotFoundException("Review with id " + reviewId + " not found.");
-        } else if (!userStorage.existsById(userId)) {
+        Review review = reviewStorage
+                .getById(reviewId)
+                .orElseThrow(()-> new NotFoundException("Review with id " + reviewId + " not found."));
+        if (!userStorage.existsById(userId)) {
             throw new NotFoundException("User with id " + userId + " not found.");
-        } else if (review.get().getUserId() == userId) {
+        } else if (review.getUserId() == userId) {
             throw new NotFoundException("Users can not like or dislike their own reviews.");
         }
     }
