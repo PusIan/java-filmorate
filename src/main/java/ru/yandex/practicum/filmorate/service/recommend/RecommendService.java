@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.recommend;
 
 import java.util.HashMap;
 import java.util.List;

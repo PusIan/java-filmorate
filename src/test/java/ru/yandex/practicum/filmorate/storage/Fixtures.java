@@ -37,7 +37,7 @@ public class Fixtures {
     public static Film getFilm3(List<Directors> directors) {
         return new Film(2,
                 "Film 3",
-                "Description 2",
+                "Description 3",
                 Date.valueOf(LocalDate.now().minusDays(5)),
                 201,
                 new ArrayList<>(List.of(new Genre(3, "Мультфильм"))),
@@ -119,4 +119,12 @@ public class Fixtures {
         return new Directors(2, "Trail");
     }
 
+    public static Event getEvent(int userId) {
+        return new Event(1,
+                1686525331339L,
+                userId,
+                EventTypeFeed.LIKE,
+                OperationFeed.ADD,
+                2);
+    }
 }

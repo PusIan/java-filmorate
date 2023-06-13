@@ -5,7 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.web.dto.request.EventRequestDto;
 import ru.yandex.practicum.filmorate.web.dto.request.UserRequestDto;
+import ru.yandex.practicum.filmorate.web.dto.response.EventResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.response.FilmResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.response.UserResponseDto;
 import ru.yandex.practicum.filmorate.web.mapper.UserMapper;
@@ -72,11 +74,24 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/{id}/feed")
+    public Collection<EventRequestDto> getFeed(@PathVariable int id) {
+        return userService.getFeed(id)
+                .stream()
+                .map(event -> conversionService.convert(event, EventResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
     @GetMapping("/{id}/recommendations")
     public Collection<FilmResponseDto> getFilmRecommendations(@PathVariable int id) {
         return userService.getFilmRecommendations(id)
                 .stream()
                 .map(film -> conversionService.convert(film, FilmResponseDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/{userId}")
+    public void delete(@PathVariable int userId) {
+        userService.delete(userId);
     }
 }
