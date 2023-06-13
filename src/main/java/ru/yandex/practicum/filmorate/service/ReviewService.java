@@ -99,7 +99,7 @@ public class ReviewService extends CrudService<Review> {
     private void checkReviewAndUser(int reviewId, int userId) {
         Review review = reviewStorage
                 .getById(reviewId)
-                .orElseThrow(()-> new NotFoundException("Review with id " + reviewId + " not found."));
+                .orElseThrow(() -> new NotFoundException("Review with id " + reviewId + " not found."));
         if (!userStorage.existsById(userId)) {
             throw new NotFoundException("User with id " + userId + " not found.");
         } else if (review.getUserId() == userId) {
