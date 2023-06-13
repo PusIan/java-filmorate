@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.model.EventTypeFeed;
 import ru.yandex.practicum.filmorate.model.OperationFeed;
-
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.ReviewStorage;
@@ -41,17 +40,17 @@ public class ReviewService extends CrudService<Review> {
         checkFilmAndUser(entity);
         entity.setUseful(0);
         Review review = super.create(entity);
-        userService.addEvent(review.getUserId(), EventTypeFeed.REVIEW, OperationFeed.ADD, review.getReviewId());
+        userService.addEvent(review.getUserId(), EventTypeFeed.REVIEW, OperationFeed.ADD, review.getId());
         return review;
     }
 
     @Override
     public Review update(Review entity) {
-        validateIds(entity.getReviewId());
+        validateIds(entity.getId());
         checkFilmAndUser(entity);
-        Optional<Review> review = reviewStorage.getById(entity.getReviewId());
+        Optional<Review> review = reviewStorage.getById(entity.getId());
         review.ifPresent(value -> userService.addEvent(value.getUserId(), EventTypeFeed.REVIEW,
-                OperationFeed.UPDATE, value.getReviewId()));
+                OperationFeed.UPDATE, value.getId()));
         return super.update(entity);
     }
 
@@ -70,7 +69,7 @@ public class ReviewService extends CrudService<Review> {
         validateIds(id);
         Optional<Review> review = reviewStorage.getById(id);
         review.ifPresent(value -> userService.addEvent(value.getUserId(), EventTypeFeed.REVIEW,
-                OperationFeed.REMOVE, value.getReviewId()));
+                OperationFeed.REMOVE, value.getId()));
 
         reviewStorage.delete(id);
     }

@@ -12,7 +12,8 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(classes = ru.yandex.practicum.filmorate.web.starter.FilmorateApplication.class)
 @AutoConfigureTestDatabase

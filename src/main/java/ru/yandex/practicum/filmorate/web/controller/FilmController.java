@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.DirectorSorted;
+import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.web.convertor.FilmToFilmResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
@@ -12,6 +13,7 @@ import ru.yandex.practicum.filmorate.web.mapper.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.Optional;
 
 @RestController
@@ -58,8 +60,8 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam String by) {
-        return convertToFilmRes.getListResponse(filmService.searchFilms(query, by));
+    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam(name = "by") EnumSet<FilmSearchBy> filmSearchByList) {
+        return convertToFilmRes.getListResponse(filmService.searchFilms(query, filmSearchByList));
     }
 
     @GetMapping("/director/{directorId}")
