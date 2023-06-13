@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFilmLike;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -44,9 +45,9 @@ public class DBUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(int userId) {
         String sqlQuery = "DELETE FROM user_ WHERE id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        jdbcTemplate.update(sqlQuery, userId);
     }
 
     @Override
@@ -101,5 +102,12 @@ public class DBUserStorage implements UserStorage {
                 " INNER JOIN user_ f ON f.id = fr.user_friend_id" +
                 " WHERE user_initiator_id = ?";
         return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(User.class), userId);
+    }
+
+    @Override
+    public List<UserFilmLike> getUserFilmLikes() {
+        String sqlQuery = "SELECT u.id userid, l.film_id filmid FROM user_ u\n" +
+                "    INNER JOIN like_ l ON u.ID = l.USER_ID";
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(UserFilmLike.class));
     }
 }

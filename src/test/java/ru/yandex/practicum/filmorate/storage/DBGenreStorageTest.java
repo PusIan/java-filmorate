@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Optional;
@@ -18,6 +19,7 @@ class DBGenreStorageTest {
     private final GenreStorage genreStorage;
 
     @Test
+    @Transactional
     public void testGetGenreById() {
         Genre genre = Fixtures.getGenre();
         Optional<Genre> genreOptional = genreStorage.getById(genre.getId());
@@ -26,11 +28,13 @@ class DBGenreStorageTest {
     }
 
     @Test
+    @Transactional
     public void testGetAllGenre() {
         assertThat(genreStorage.getAll()).isEqualTo(Fixtures.getAllGenre());
     }
 
     @Test
+    @Transactional
     public void testGetGenreByIdNotExistentIdEmptyResult() {
         Optional<Genre> genreOptional = genreStorage.getById(-1);
         assertThat(genreOptional).isEmpty();

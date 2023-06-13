@@ -70,5 +70,36 @@ CREATE TABLE IF NOT EXISTS friend_request
 
 CREATE UNIQUE INDEX IF NOT EXISTS friend_request_uq1 on friend_request (user_initiator_id, user_friend_id);
 
+CREATE TABLE IF NOT EXISTS reviews
+(
+    review_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id     INT REFERENCES user_ ON DELETE CASCADE NOT NULL,
+    film_id     INT REFERENCES film ON DELETE CASCADE  NOT NULL,
+    is_positive BOOLEAN                                NOT NULL,
+    useful      INT                                    NOT NULL,
+    content     VARCHAR(128)
+);
 
+CREATE UNIQUE INDEX IF NOT EXISTS reviews_uq_user_film on reviews (user_id, film_id);
+
+CREATE TABLE IF NOT EXISTS review_likes
+(
+    id        INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id   INT REFERENCES user_ ON DELETE CASCADE   NOT NULL,
+    review_id INT REFERENCES reviews ON DELETE CASCADE NOT NULL,
+    is_like   BOOLEAN                                  NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS review_likes_uq_user_review on review_likes (user_id, review_id);
+
+
+CREATE TABLE IF NOT EXISTS events
+(
+    event_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    timestamp  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id    INT REFERENCES user_ ON DELETE CASCADE,
+    event_type VARCHAR(10),
+    operation  VARCHAR(10),
+    entity_id  INT
+);
 

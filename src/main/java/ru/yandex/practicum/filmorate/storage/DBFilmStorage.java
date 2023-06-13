@@ -11,10 +11,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.model.Directors;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,27 +25,81 @@ public class DBFilmStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final RatingMpaStorage ratingMpaStorage;
+    private final GenreStorage genreStorage;
 
     @Override
-    public List<Film> getPopularFilms(int count) {
+    public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
         String sqlQuery = "SELECT f.* FROM film f\n" +
                 "LEFT JOIN like_ l ON l.film_id = f.id\n" +
                 "GROUP BY f.id\n" +
                 "ORDER BY COUNT(l.id) DESC\n" +
                 "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+        List<Film> filmsSortedByLikes = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
+
+        if (genreId.isPresent()) {
+            Genre genre = genreStorage
+                    .getById(genreId.get())
+                    .orElseThrow();
+
+            filmsSortedByLikes.removeIf(film -> !film.getGenres().contains(genre));
+        }
+        if (year.isPresent()) {
+            filmsSortedByLikes.removeIf(film -> film.getYear() != year.get());
+        }
+        return filmsSortedByLikes;
     }
 
     @Override
     public void addLike(int userId, int filmId) {
-        String sqlQuery = "INSERT INTO like_ (film_id, user_id) VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
+        String sqlQueryForLikes = "SELECT user_id FROM like_ WHERE film_id = ?";
+        List<Integer> likes = jdbcTemplate.queryForList(sqlQueryForLikes, Integer.class, filmId);
+        if (!likes.contains(userId)) {
+            String sqlQuery = "INSERT INTO like_ (film_id, user_id) VALUES (?, ?)";
+            jdbcTemplate.update(sqlQuery, filmId, userId);
+        }
     }
 
     @Override
     public void deleteLike(int userId, int filmId) {
         String sqlQuery = "DELETE FROM like_ WHERE film_id=? AND user_id=?";
         jdbcTemplate.update(sqlQuery, filmId, userId);
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, List<FilmSearchBy> filmSearchByList) {
+        SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(
+                "query", "%" + query + "%"));
+        String sqlQuery = "SELECT f.* FROM film f\n" +
+                "LEFT JOIN like_ l ON l.film_id = f.id\n" +
+                "LEFT JOIN film_directors fd on fd.film_id = f.id\n" +
+                "LEFT JOIN director d on d.id = fd.director_id\n" +
+                "WHERE 0=1\n";
+        for (FilmSearchBy filmSearchBy : filmSearchByList) {
+            switch (filmSearchBy) {
+                case title:
+                    sqlQuery += "OR LOWER(f.name) like LOWER(:query)\n";
+                    break;
+                case director:
+                    sqlQuery += "OR LOWER(d.name) like LOWER(:query)\n";
+                    break;
+                default:
+                    throw new RuntimeException(filmSearchBy + " not supported");
+            }
+        }
+        sqlQuery += "GROUP BY f.id\n" +
+                "ORDER BY COUNT(l.id) DESC\n";
+        return namedParameterJdbcTemplate.query(sqlQuery, sqlParameterSource, this::mapRowToFilm);
+    }
+
+    @Override
+    public List<Film> getFilmsByIds(List<Integer> filmIds) {
+        SqlParameterSource parameters = new MapSqlParameterSource("filmIds", filmIds);
+        String sqlQuery = "SELECT * FROM film WHERE id IN (:filmIds)";
+        return namedParameterJdbcTemplate.query(
+                sqlQuery,
+                parameters,
+                this::mapRowToFilm
+        );
     }
 
     @Override
@@ -105,9 +156,9 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(int filmId) {
         String sqlQuery = "DELETE FROM film WHERE id = ?";
-        jdbcTemplate.update(sqlQuery, id);
+        jdbcTemplate.update(sqlQuery, filmId);
     }
 
     @Override
@@ -122,29 +173,6 @@ public class DBFilmStorage implements FilmStorage {
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, id)
                 .stream()
                 .findFirst();
-    }
-
-    private void saveFilmDirectors(Integer filmId, List<Directors> directorsList) {
-        if (directorsList != null && !directorsList.isEmpty()) {
-            String sqlQueryDeleteDirectorsForNotExistentIds = "DELETE FROM film_directors WHERE film_id = :filmId " +
-                    "AND director_id NOT IN (:directorId)";
-            SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(
-                    "filmId", filmId,
-                    "directorId", directorsList.stream().map(Directors::getId).toArray()));
-            namedParameterJdbcTemplate.update(sqlQueryDeleteDirectorsForNotExistentIds, sqlParameterSource);
-            String sqlQueryMergeGenre = "MERGE INTO film_directors (film_id, director_id) KEY (film_id, director_id) " +
-                    "SELECT ?, ? FROM dual";
-            jdbcTemplate.batchUpdate(sqlQueryMergeGenre,
-                    directorsList,
-                    100,
-                    (preparedStatement, directors) -> {
-                        preparedStatement.setInt(1, filmId);
-                        preparedStatement.setInt(2, directors.getId());
-                    });
-        } else {
-            String sqlQueryDeleteAllGenre = "DELETE FROM film_directors WHERE film_id = ?";
-            jdbcTemplate.update(sqlQueryDeleteAllGenre, filmId);
-        }
     }
 
     private void saveFilmGenre(Integer filmId, List<Genre> genreList) {
