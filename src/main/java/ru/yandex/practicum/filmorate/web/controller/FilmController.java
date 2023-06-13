@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.DirectorSorted;
 import ru.yandex.practicum.filmorate.service.FilmService;
