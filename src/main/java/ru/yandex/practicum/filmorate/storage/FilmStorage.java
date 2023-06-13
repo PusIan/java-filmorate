@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import ru.yandex.practicum.filmorate.model.DirectorSorted;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 
@@ -17,7 +18,7 @@ public interface FilmStorage extends Storage<Film> {
 
     List<Film> getFilmsByIds(List<Integer> filmIds);
 
-    List<Film> filmsDirectorSorted(int directorId, String sort);
+    List<Film> filmsDirectorSorted(int directorId, DirectorSorted sort);
 
     List<Film> getCommonFilms(int userId, int friendId);
 }
