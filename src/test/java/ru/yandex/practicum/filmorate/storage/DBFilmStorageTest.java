@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.model.Directors;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.FilmSearchBy;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -99,9 +96,9 @@ public class DBFilmStorageTest {
         filmStorage.addLike(createdUser.getId(), createdFilm1.getId());
         List<Film> manualSort = Stream.of(createdFilm1, createdFilm2)
                 .sorted(Comparator.comparing(Film::getReleaseDate).reversed()).collect(Collectors.toList());
-        assertAll(() -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "year"))
+        assertAll(() -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), DirectorSorted.year))
                         .isEqualTo(manualSort),
-                () -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "likes"))
+                () -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), DirectorSorted.likes))
                         .isEqualTo(List.of(createdFilm1, createdFilm2)));
     }
 

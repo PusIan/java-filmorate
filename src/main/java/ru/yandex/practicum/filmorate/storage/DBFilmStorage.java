@@ -103,14 +103,14 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> filmsDirectorSorted(int directorId, String sort) {
-        if (sort.equals("year")) {
+    public List<Film> filmsDirectorSorted(int directorId, DirectorSorted sort) {
+        if (sort.equals(DirectorSorted.year)) {
             String sqlQuery = "SELECT f.* FROM film f\n" +
                     "where f.ID in (select film_id from film_directors where director_id = ?)" +
                     "GROUP BY f.id\n" +
                     "ORDER BY f.id DESC\n";
             return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
-        } else if (sort.equals("likes")) {
+        } else if (sort.equals(DirectorSorted.likes)) {
             String sqlQuery = "SELECT f.* FROM film f\n" +
                     "LEFT JOIN like_ l ON l.film_id = f.id\n" +
                     "where f.ID in (SELECT film_id FROM film_directors WHERE director_id = ?)" +
