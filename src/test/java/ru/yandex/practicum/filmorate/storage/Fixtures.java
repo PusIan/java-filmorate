@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Fixtures {
-    public static Film getFilm1(List<Directors> directors) {
+    public static Film getFilm1(List<Director> directors) {
         return new Film(1,
                 "Film 1",
                 "Description 1",
@@ -21,7 +21,7 @@ public class Fixtures {
         );
     }
 
-    public static Film getFilm2(List<Directors> directors) {
+    public static Film getFilm2(List<Director> directors) {
         return new Film(2,
                 "Film 2",
                 "Description 2",
@@ -34,7 +34,7 @@ public class Fixtures {
         );
     }
 
-    public static Film getFilm3(List<Directors> directors) {
+    public static Film getFilm3(List<Director> directors) {
         return new Film(2,
                 "Film 3",
                 "Description 3",
@@ -105,18 +105,18 @@ public class Fixtures {
                 0);
     }
 
-    public static List<Directors> getDirectorList() {
-        return List.of(new Directors(1, "Luck"),
-                new Directors(2, "Bortko"),
-                new Directors(3, "Reuel Tolkien"));
+    public static List<Director> getDirectorList() {
+        return List.of(new Director(1, "Luck"),
+                new Director(2, "Bortko"),
+                new Director(3, "Reuel Tolkien"));
     }
 
-    public static Directors getDirector() {
-        return new Directors(1, "Bortko");
+    public static Director getDirector() {
+        return new Director(1, "Bortko");
     }
 
-    public static Directors getDirector2() {
-        return new Directors(2, "Trail");
+    public static Director getDirector2() {
+        return new Director(2, "Trail");
     }
 
     public static Event getEvent(int userId) {

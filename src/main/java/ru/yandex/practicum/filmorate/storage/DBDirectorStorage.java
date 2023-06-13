@@ -8,7 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.yandex.practicum.filmorate.model.Directors;
+import ru.yandex.practicum.filmorate.model.Director;
 
 import java.sql.PreparedStatement;
 import java.util.List;
@@ -22,15 +22,15 @@ public class DBDirectorStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<Directors> getAll() {
+    public List<Director> getAll() {
         String sqlQuery = "SELECT * FROM director";
-        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Directors.class));
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Director.class));
     }
 
     @Override
-    public Optional<Directors> getById(int id) {
+    public Optional<Director> getById(int id) {
         String sqlQuery = "SELECT * FROM director WHERE id = ?";
-        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Directors.class), id)
+        return jdbcTemplate.query(sqlQuery, new BeanPropertyRowMapper<>(Director.class), id)
                 .stream()
                 .findFirst();
     }
@@ -44,7 +44,7 @@ public class DBDirectorStorage implements DirectorStorage {
 
     @Transactional
     @Override
-    public Directors create(Directors entity) {
+    public Director create(Director entity) {
         String sqlQueryDirector = "INSERT INTO director (name) VALUES (?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -58,7 +58,7 @@ public class DBDirectorStorage implements DirectorStorage {
 
     @Transactional
     @Override
-    public Optional<Directors> update(Directors entity) {
+    public Optional<Director> update(Director entity) {
         String sqlQuery = "UPDATE director SET name = ? WHERE id = ?";
         jdbcTemplate.update(sqlQuery, entity.getName(), entity.getId());
         return this.getById(entity.getId());

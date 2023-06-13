@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, of = {"id"})
-public class Directors extends Entity {
+public class Director extends Entity {
     private Integer id;
     private String name;
 }

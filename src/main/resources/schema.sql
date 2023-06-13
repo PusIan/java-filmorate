@@ -72,7 +72,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS friend_request_uq1 on friend_request (user_ini
 
 CREATE TABLE IF NOT EXISTS reviews
 (
-    review_id   INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id          INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     user_id     INT REFERENCES user_ ON DELETE CASCADE NOT NULL,
     film_id     INT REFERENCES film ON DELETE CASCADE  NOT NULL,
     is_positive BOOLEAN                                NOT NULL,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS review_likes
     is_like   BOOLEAN                                  NOT NULL
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS review_likes_uq_user_review on review_likes (user_id, review_id);
+CREATE UNIQUE INDEX IF NOT EXISTS review_likes_uq_user_review on review_likes (user_id, id);
 
 CREATE TABLE IF NOT EXISTS events
 (
