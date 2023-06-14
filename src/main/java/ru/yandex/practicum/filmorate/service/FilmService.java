@@ -4,13 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.*;
-import ru.yandex.practicum.filmorate.exceptions.NotFoundException;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.Optional;
 
 @Service
@@ -55,19 +53,8 @@ public class FilmService extends CrudService<Film> {
         return Film.class.getSimpleName();
     }
 
-    public List<Film> searchFilms(String query, String by) {
-        List<FilmSearchBy> searchBySources = Arrays.stream(by.split(","))
-                .distinct()
-                .map(s -> {
-                    try {
-                        return FilmSearchBy.valueOf(s);
-                    } catch (IllegalArgumentException e) {
-                        throw new NotFoundException(String.format("Parameter %s is not supported", s));
-                    }
-                })
-                .collect(Collectors.toList());
-
-        return filmStorage.searchFilms(query, searchBySources);
+    public List<Film> searchFilms(String query, EnumSet<FilmSearchBy> filmSearchByList) {
+        return filmStorage.searchFilms(query, filmSearchByList);
     }
 
     @Override

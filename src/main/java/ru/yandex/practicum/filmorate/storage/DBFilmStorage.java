@@ -29,24 +29,24 @@ public class DBFilmStorage implements FilmStorage {
 
     @Override
     public List<Film> getPopularFilms(int count, Optional<Integer> genreId, Optional<Integer> year) {
+        MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
         String sqlQuery = "SELECT f.* FROM film f\n" +
                 "LEFT JOIN like_ l ON l.film_id = f.id\n" +
-                "GROUP BY f.id\n" +
-                "ORDER BY COUNT(l.id) DESC\n" +
-                "LIMIT ?";
-        List<Film> filmsSortedByLikes = jdbcTemplate.query(sqlQuery, this::mapRowToFilm, count);
-
+                "LEFT JOIN film_genre fg ON fg.film_id = f.id\n" +
+                "WHERE 1=1\n";
         if (genreId.isPresent()) {
-            Genre genre = genreStorage
-                    .getById(genreId.get())
-                    .orElseThrow();
-
-            filmsSortedByLikes.removeIf(film -> !film.getGenres().contains(genre));
+            sqlQuery += "AND fg.genre_id = :genreId\n";
+            mapSqlParameterSource.addValue("genreId", genreId.get());
         }
         if (year.isPresent()) {
-            filmsSortedByLikes.removeIf(film -> film.getYear() != year.get());
+            sqlQuery += "AND TO_CHAR(f.release_date,'yyyy') = :releaseDate\n";
+            mapSqlParameterSource.addValue("releaseDate", year.get());
         }
-        return filmsSortedByLikes;
+        mapSqlParameterSource.addValue("rowLimit", count);
+        sqlQuery += "GROUP BY f.id\n" +
+                "ORDER BY COUNT(l.id) DESC\n" +
+                "LIMIT :rowLimit";
+        return namedParameterJdbcTemplate.query(sqlQuery, mapSqlParameterSource, this::mapRowToFilm);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> searchFilms(String query, List<FilmSearchBy> filmSearchByList) {
+    public List<Film> searchFilms(String query, EnumSet<FilmSearchBy> filmSearchByList) {
         SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(
                 "query", "%" + query + "%"));
         String sqlQuery = "SELECT f.* FROM film f\n" +
@@ -76,10 +76,10 @@ public class DBFilmStorage implements FilmStorage {
                 "WHERE 0=1\n";
         for (FilmSearchBy filmSearchBy : filmSearchByList) {
             switch (filmSearchBy) {
-                case title:
+                case TITLE:
                     sqlQuery += "OR LOWER(f.name) like LOWER(:query)\n";
                     break;
-                case director:
+                case DIRECTOR:
                     sqlQuery += "OR LOWER(d.name) like LOWER(:query)\n";
                     break;
                 default:
@@ -103,14 +103,14 @@ public class DBFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> filmsDirectorSorted(int directorId, DirectorSorted sort) {
-        if (sort.equals(DirectorSorted.year)) {
+    public List<Film> filmsDirectorSorted(int directorId, String sort) {
+        if (sort.equals("year")) {
             String sqlQuery = "SELECT f.* FROM film f\n" +
                     "where f.ID in (select film_id from film_directors where director_id = ?)" +
                     "GROUP BY f.id\n" +
                     "ORDER BY f.id DESC\n";
             return jdbcTemplate.query(sqlQuery, this::mapRowToFilm, directorId);
-        } else if (sort.equals(DirectorSorted.likes)) {
+        } else if (sort.equals("likes")) {
             String sqlQuery = "SELECT f.* FROM film f\n" +
                     "LEFT JOIN like_ l ON l.film_id = f.id\n" +
                     "where f.ID in (SELECT film_id FROM film_directors WHERE director_id = ?)" +
@@ -175,18 +175,18 @@ public class DBFilmStorage implements FilmStorage {
                 .findFirst();
     }
 
-    private void saveFilmDirectors(Integer filmId, List<Directors> directorsList) {
-        if (directorsList != null && !directorsList.isEmpty()) {
+    private void saveFilmDirectors(Integer filmId, List<Director> directorList) {
+        if (directorList != null && !directorList.isEmpty()) {
             String sqlQueryDeleteDirectorsForNotExistentIds = "DELETE FROM film_directors WHERE film_id = :filmId " +
                     "AND director_id NOT IN (:directorId)";
             SqlParameterSource sqlParameterSource = new MapSqlParameterSource(Map.of(
                     "filmId", filmId,
-                    "directorId", directorsList.stream().map(Directors::getId).toArray()));
+                    "directorId", directorList.stream().map(Director::getId).toArray()));
             namedParameterJdbcTemplate.update(sqlQueryDeleteDirectorsForNotExistentIds, sqlParameterSource);
             String sqlQueryMergeGenre = "MERGE INTO film_directors (film_id, director_id) KEY (film_id, director_id) " +
                     "SELECT ?, ? FROM dual";
             jdbcTemplate.batchUpdate(sqlQueryMergeGenre,
-                    directorsList,
+                    directorList,
                     100,
                     (preparedStatement, directors) -> {
                         preparedStatement.setInt(1, filmId);
@@ -247,7 +247,7 @@ public class DBFilmStorage implements FilmStorage {
                 .getById(resultSet.getInt("rating_mpa_id"))
                 .orElseThrow();
         List<Genre> genres = this.getFilmGenre(resultSet.getInt("id"));
-        List<Directors> directors = this.getFilmDirectors(resultSet.getInt("id"));
+        List<Director> directors = this.getFilmDirectors(resultSet.getInt("id"));
         return new Film(resultSet.getInt("id"),
                 resultSet.getString("name"),
                 resultSet.getString("description"),
@@ -258,9 +258,9 @@ public class DBFilmStorage implements FilmStorage {
                 directors);
     }
 
-    private List<Directors> getFilmDirectors(Integer filmId) {
+    private List<Director> getFilmDirectors(Integer filmId) {
         String sqlQuerySelectGenre = "SELECT d.* FROM film_directors f INNER JOIN director d ON d.id = f.director_id WHERE film_id = ?";
-        return jdbcTemplate.query(sqlQuerySelectGenre, new BeanPropertyRowMapper<>(Directors.class), filmId);
+        return jdbcTemplate.query(sqlQuerySelectGenre, new BeanPropertyRowMapper<>(Director.class), filmId);
     }
 
     @Override

@@ -4,6 +4,7 @@ import ru.yandex.practicum.filmorate.model.DirectorSorted;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +15,7 @@ public interface FilmStorage extends Storage<Film> {
 
     void deleteLike(int userId, int filmId);
 
-    List<Film> searchFilms(String query, List<FilmSearchBy> searchBySources);
+    List<Film> searchFilms(String query, EnumSet<FilmSearchBy> searchBySources);
 
     List<Film> getFilmsByIds(List<Integer> filmIds);
 

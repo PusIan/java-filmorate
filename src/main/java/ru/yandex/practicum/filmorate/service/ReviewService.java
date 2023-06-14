@@ -25,7 +25,6 @@ public class ReviewService extends CrudService<Review> {
     private final ReviewStorage reviewStorage;
     private final UserService userService;
 
-
     @Override
     String getServiceType() {
         return Review.class.getSimpleName();
@@ -41,17 +40,17 @@ public class ReviewService extends CrudService<Review> {
         checkFilmAndUser(entity);
         entity.setUseful(0);
         Review review = super.create(entity);
-        userService.addEvent(review.getUserId(), EventTypeFeed.REVIEW, OperationFeed.ADD, review.getReviewId());
+        userService.addEvent(review.getUserId(), EventTypeFeed.REVIEW, OperationFeed.ADD, review.getId());
         return review;
     }
 
     @Override
     public Review update(Review entity) {
-        validateIds(entity.getReviewId());
+        validateIds(entity.getId());
         checkFilmAndUser(entity);
-        Optional<Review> review = reviewStorage.getById(entity.getReviewId());
+        Optional<Review> review = reviewStorage.getById(entity.getId());
         review.ifPresent(value -> userService.addEvent(value.getUserId(), EventTypeFeed.REVIEW,
-                OperationFeed.UPDATE, value.getReviewId()));
+                OperationFeed.UPDATE, value.getId()));
         return super.update(entity);
     }
 
@@ -70,7 +69,8 @@ public class ReviewService extends CrudService<Review> {
         validateIds(id);
         Optional<Review> review = reviewStorage.getById(id);
         review.ifPresent(value -> userService.addEvent(value.getUserId(), EventTypeFeed.REVIEW,
-                OperationFeed.REMOVE, value.getReviewId()));
+                OperationFeed.REMOVE, value.getId()));
+
         reviewStorage.delete(id);
     }
 
@@ -96,12 +96,12 @@ public class ReviewService extends CrudService<Review> {
     }
 
     private void checkReviewAndUser(int reviewId, int userId) {
-        Optional<Review> review = reviewStorage.getById(reviewId);
-        if (review.isEmpty()) {
-            throw new NotFoundException("Review with id " + reviewId + " not found.");
-        } else if (!userStorage.existsById(userId)) {
+        Review review = reviewStorage
+                .getById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Review with id " + reviewId + " not found."));
+        if (!userStorage.existsById(userId)) {
             throw new NotFoundException("User with id " + userId + " not found.");
-        } else if (review.get().getUserId() == userId) {
+        } else if (review.getUserId() == userId) {
             throw new NotFoundException("Users can not like or dislike their own reviews.");
         }
     }
