@@ -162,4 +162,25 @@ public class DBFilmStorageTest {
                 EnumSet.of(FilmSearchBy.TITLE, FilmSearchBy.DIRECTOR));
         assertThat(actualFilmList).isEqualTo(expectedFilmList);
     }
+
+    @Test
+    @Transactional
+    public void testGetFilmByIdsSimpleCaseCorrectResult() {
+        Film film1 = filmStorage.create(Fixtures.getFilm1());
+        Film film2 = filmStorage.create(Fixtures.getFilm2());
+        Film film3 = filmStorage.create(Fixtures.getFilm3());
+        List<Film> expectedFilmList = List.of(film2, film3);
+        List<Film> actualFilmList = filmStorage.getFilmsByIds(
+                expectedFilmList.stream().map(Film::getId).collect(Collectors.toList()));
+        assertThat(actualFilmList).isEqualTo(expectedFilmList);
+    }
+
+    @Test
+    @Transactional
+    public void testGetFilmByIdsSimpleCaseEmptyResult() {
+        Film film1 = filmStorage.create(Fixtures.getFilm1());
+        Film film2 = filmStorage.create(Fixtures.getFilm2());
+        List<Film> actualFilmList = filmStorage.getFilmsByIds(List.of(-1));
+        assertThat(actualFilmList).isEqualTo(Collections.emptyList());
+    }
 }
