@@ -3,74 +3,72 @@ package ru.yandex.practicum.filmorate.service.recommend;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*
  *    Collaborative Filtering
- *    The Slope One algorithm is an item-based collaborative filtering system.
- *    It means that it is completely based on the user-item ranking. When we compute the
- *    similarity between objects, we only know the history of rankings, not the content itself.
- *    This similarity is then used to predict potential user rankings for user-item pairs not present in the dataset.
- *
- *    T - Entity which rates items
- *    Y - Type of Item, for which we have rating
- *
- *    Description: https://www.baeldung.com/java-collaborative-filtering-recommendations
  */
 @Service
 public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
 
-    private HashMap<Y, HashMap<Y, Double>> diff;
-    private HashMap<Y, HashMap<Y, Integer>> freq;
+    private final HashMap<Y, HashMap<Y, Double>> diff;
+    private final HashMap<Y, HashMap<Y, Integer>> freq;
+
+    public RecommendServiceImpl() {
+        diff = new HashMap<>();
+        freq = new HashMap<>();
+    }
 
     @Override
     public List<Y> recommend(T entity, HashMap<T, HashMap<Y, Integer>> data) {
-        if (!data.keySet().isEmpty() && data.containsKey(entity)) {
+        if (!data.containsKey(entity)) {
+            return Collections.emptyList();
+        } else {
             prepareDiffFreqMatrices(data);
             return predict(entity, data);
         }
-        return Collections.emptyList();
     }
 
-    /*
-     * Calculation of differences and frequencies matrices
-     * */
     private void prepareDiffFreqMatrices(HashMap<T, HashMap<Y, Integer>> data) {
-        this.diff = new HashMap<>();
-        this.freq = new HashMap<>();
+        HashMap<Y, Double> diffKey;
+        HashMap<Y, Integer> freqKey;
+        int oldCount;
+        double oldDiff;
+        double observedDiff;
+        Y key2;
+        Y key;
         /*
-         * Based on the available data, we'll calculate the relationships between the items,
-         * as well as the number of items' occurrences. For each user, we check his/her rating of the items
-         * */
+         * Собираем diff & freq.
+         */
         for (HashMap<Y, Integer> user : data.values()) {
             for (Map.Entry<Y, Integer> e : user.entrySet()) {
-                if (!diff.containsKey(e.getKey())) {
-                    diff.put(e.getKey(), new HashMap<Y, Double>());
-                    freq.put(e.getKey(), new HashMap<Y, Integer>());
+                key = e.getKey();
+                if (!diff.containsKey(key)) {
+                    diff.put(key, new HashMap<>());
+                    freq.put(key, new HashMap<>());
                 }
-
+                diffKey = diff.get(key);
+                freqKey = freq.get(key);
                 for (Map.Entry<Y, Integer> e2 : user.entrySet()) {
-                    int oldCount = 0;
-                    if (freq.get(e.getKey()).containsKey(e2.getKey())) {
-                        oldCount = freq.get(e.getKey()).get(e2.getKey()).intValue();
-                    }
-
-                    double oldDiff = 0.0;
-                    if (diff.get(e.getKey()).containsKey(e2.getKey())) {
-                        oldDiff = diff.get(e.getKey()).get(e2.getKey()).doubleValue();
-                    }
-
-                    double observedDiff = e.getValue() - e2.getValue();
-                    freq.get(e.getKey()).put(e2.getKey(), oldCount + 1);
-                    diff.get(e.getKey()).put(e2.getKey(), oldDiff + observedDiff);
+                    key2 = e2.getKey();
+                    oldCount = freqKey.getOrDefault(key2, 0);
+                    oldDiff = diffKey.getOrDefault(key2, 0.0);
+                    observedDiff = e.getValue() - e2.getValue();
+                    freqKey.put(key2, oldCount + 1);
+                    diffKey.put(key2, oldDiff + observedDiff);
                 }
-
-                for (Y j : diff.keySet()) {
-                    for (Y i : diff.get(j).keySet()) {
-                        double oldValue = diff.get(j).get(i).doubleValue();
-                        int count = freq.get(j).get(i).intValue();
-                        diff.get(j).put(i, oldValue / count);
-                    }
-                }
+            }
+        }
+        /*
+        Проапдейтили diff на средние значения.
+         */
+        int count;
+        for (Y j : diff.keySet()) {
+            diffKey = diff.get(j);
+            for (Y i : diffKey.keySet()) {
+                oldDiff = diffKey.get(i);
+                count = freq.get(j).get(i);
+                diffKey.put(i, oldDiff / count);
             }
         }
     }
@@ -83,34 +81,32 @@ public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
     private List<Y> predict(T entity, HashMap<T, HashMap<Y, Integer>> data) {
         HashMap<Y, Double> uPred = new HashMap<>();
         HashMap<Y, Integer> uFreq = new HashMap<>();
+        int freqVal;
+        double userVal;
+        double predictedValue;
         HashMap<Y, Integer> userData = data.get(entity);
-        if (userData != null) {
-            for (Y j : userData.keySet()) {
-                for (Y k : diff.keySet()) {
-                    double predictedValue =
-                            diff.get(k).getOrDefault(j, 0.0).doubleValue() + userData.get(j).doubleValue();
-                    double finalValue = predictedValue * freq.get(k).getOrDefault(j, 0).intValue();
-                    uPred.put(k, uPred.getOrDefault(k, 0.0) + finalValue);
-                    uFreq.put(k, uFreq.getOrDefault(k, 0) + freq.get(k).getOrDefault(j, 0).intValue());
-                }
+        if (userData == null) {
+            return Collections.emptyList();
+        }
+        for (Y j : userData.keySet()) {
+            userVal = userData.get(j).doubleValue();
+            for (Y k : diff.keySet()) {
+                freqVal = freq.get(k).getOrDefault(j, 0);
+                predictedValue = diff.get(k).getOrDefault(j, 0.0) + userVal;
+                uPred.put(k, uPred.getOrDefault(k, 0.0) + predictedValue * freqVal);
+                uFreq.put(k, uFreq.getOrDefault(k, 0) + freqVal);
             }
-            HashMap<Y, Double> clean = new HashMap<Y, Double>();
-            for (Y j : uPred.keySet()) {
-                if (uFreq.get(j) > 0) {
-                    clean.put(j, uPred.get(j).doubleValue() / uFreq.get(j).intValue());
-                }
-            }
-
-            Set<Y> ret = clean.keySet();
-
+        }
+        Set<Y> predicted = uPred
+                .keySet()
+                .stream()
+                .filter(j -> uFreq.get(j) > 0)
+                .collect(Collectors.toSet());
             /* We should receive the predictions for items that user didn't rate,
             but also the repeated ratings for the items that he rated.
             Those repeated rates are not needed in our case, but can be used for algorithm validation.
             * */
-            ret.removeAll(userData.keySet());
-
-            return new ArrayList<>(ret);
-        }
-        return Collections.emptyList();
+        predicted.removeAll(userData.keySet());
+        return new ArrayList<>(predicted);
     }
 }
