@@ -93,9 +93,9 @@ public class DBFilmStorageTest {
         filmStorage.addLike(createdUser.getId(), createdFilm1.getId());
         List<Film> manualSort = Stream.of(createdFilm1, createdFilm2)
                 .sorted(Comparator.comparing(Film::getReleaseDate).reversed()).collect(Collectors.toList());
-        assertAll(() -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "year"))
+        assertAll(() -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), DirectorSorted.YEAR))
                         .isEqualTo(manualSort),
-                () -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), "likes"))
+                () -> assertThat(filmStorage.filmsDirectorSorted(director1.getId(), DirectorSorted.LIKES))
                         .isEqualTo(List.of(createdFilm1, createdFilm2)));
     }
 

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.web.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.web.convertor.FilmToFilmResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
@@ -58,15 +59,12 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam String by) {
-        return this.filmService.searchFilms(query, by)
-                .stream()
-                .map(film -> conversionService.convert(film, FilmResponseDto.class))
-                .collect(Collectors.toList());
+    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam EnumSet<FilmSearchBy> by) {
+        return convertToFilmRes.getListResponse(filmService.searchFilms(query, by));
     }
 
     @GetMapping("/director/{directorId}")
-    public Collection<FilmResponseDto> getFilmDirectorFromCountLikeOrYear(@PathVariable int directorId, @RequestParam(name = "sortBy") DirectorSorted sorted) {
+    public Collection<FilmResponseDto> getFilmDirectorFromCountLikeOrYear(@PathVariable int directorId, @RequestParam(name = "sortBy") String sorted) {
         return convertToFilmRes.getListResponse(filmService.filmsDirectorSorted(directorId, sorted));
     }
 

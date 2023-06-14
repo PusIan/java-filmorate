@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -18,9 +19,10 @@ public class FilmService extends CrudService<Film> {
     private final DirectorService directorService;
     private final UserService userService;
 
-    public List<Film> filmsDirectorSorted(int directorId, DirectorSorted sort) {
+    public List<Film> filmsDirectorSorted(int directorId, String sort) {
         directorService.validateIds(directorId);
-        return filmStorage.filmsDirectorSorted(directorId, sort);
+        return filmStorage.filmsDirectorSorted(directorId,
+                Arrays.stream(DirectorSorted.values()).filter(s -> s.getSort().equals(sort)).findFirst().orElseThrow());
     }
 
     public void addLike(int userId, int filmId) {
@@ -53,8 +55,8 @@ public class FilmService extends CrudService<Film> {
         return Film.class.getSimpleName();
     }
 
-    public List<Film> searchFilms(String query, EnumSet<FilmSearchBy> filmSearchByList) {
-        return filmStorage.searchFilms(query, filmSearchByList);
+    public List<Film> searchFilms(String query, EnumSet<FilmSearchBy> searchBySources) {
+        return filmStorage.searchFilms(query, searchBySources);
     }
 
     @Override
