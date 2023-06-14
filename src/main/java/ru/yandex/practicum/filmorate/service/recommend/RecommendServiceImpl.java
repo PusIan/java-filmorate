@@ -73,39 +73,28 @@ public class RecommendServiceImpl<T, Y> implements RecommendService<T, Y> {
         }
     }
 
-    /*
-     * The main part of the Slope One, we are going to predict all missing ratings based on the existing data.
-     * In order to do that, we need to compare the user-item ratings
-     * with differences matrix calculated in the prepareDiffFreqMatrices
-     * */
     private List<Y> predict(T entity, HashMap<T, HashMap<Y, Integer>> data) {
-        HashMap<Y, Double> uPred = new HashMap<>();
         HashMap<Y, Integer> uFreq = new HashMap<>();
         int freqVal;
-        double userVal;
-        double predictedValue;
         HashMap<Y, Integer> userData = data.get(entity);
         if (userData == null) {
             return Collections.emptyList();
         }
+        // 2 вычисляем только uFreq
+        // 3 uPred.keySet() == diff.keySet()
+        // uPred не нужен
         for (Y j : userData.keySet()) {
-            userVal = userData.get(j).doubleValue();
             for (Y k : diff.keySet()) {
                 freqVal = freq.get(k).getOrDefault(j, 0);
-                predictedValue = diff.get(k).getOrDefault(j, 0.0) + userVal;
-                uPred.put(k, uPred.getOrDefault(k, 0.0) + predictedValue * freqVal);
                 uFreq.put(k, uFreq.getOrDefault(k, 0) + freqVal);
             }
         }
-        Set<Y> predicted = uPred
+        // 1 от uPred нужен только кисет
+        Set<Y> predicted = diff
                 .keySet()
                 .stream()
                 .filter(j -> uFreq.get(j) > 0)
                 .collect(Collectors.toSet());
-            /* We should receive the predictions for items that user didn't rate,
-            but also the repeated ratings for the items that he rated.
-            Those repeated rates are not needed in our case, but can be used for algorithm validation.
-            * */
         predicted.removeAll(userData.keySet());
         return new ArrayList<>(predicted);
     }
