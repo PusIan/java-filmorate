@@ -2,45 +2,46 @@ package ru.yandex.practicum.filmorate.web.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.convert.ConversionService;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.DirectorSorted;
+import ru.yandex.practicum.filmorate.model.FilmSearchBy;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.web.convertor.FilmToFilmResponseDto;
 import ru.yandex.practicum.filmorate.web.dto.request.FilmRequestDto;
 import ru.yandex.practicum.filmorate.web.dto.response.FilmResponseDto;
 import ru.yandex.practicum.filmorate.web.mapper.FilmMapper;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.stream.Collectors;
+import java.util.EnumSet;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/films")
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmController {
-    private final ConversionService conversionService;
+    private final FilmToFilmResponseDto convertToFilmRes;
     private final FilmMapper filmMapper;
     private final FilmService filmService;
 
     @GetMapping
     public Collection<FilmResponseDto> getAll() {
-        return filmService.getAll().stream()
-                .map(film -> conversionService.convert(film, FilmResponseDto.class))
-                .collect(Collectors.toList());
+        return convertToFilmRes.getListResponse(filmService.getAll());
     }
 
     @GetMapping("/{filmId}")
     public FilmResponseDto getById(@PathVariable int filmId) {
-        return conversionService.convert(filmService.getById(filmId), FilmResponseDto.class);
+        return convertToFilmRes.convert(filmService.getById(filmId));
     }
 
     @PostMapping
     public FilmResponseDto create(@Valid @RequestBody FilmRequestDto filmRequestDto) {
-        return conversionService.convert(filmService.create(filmMapper.mapToFilm(filmRequestDto)), FilmResponseDto.class);
+        return convertToFilmRes.convert(filmService.create(filmMapper.mapToFilm(filmRequestDto)));
     }
 
     @PutMapping
     public FilmResponseDto update(@Valid @RequestBody FilmRequestDto filmRequestDto) {
-        return conversionService.convert(filmService.update(filmMapper.mapToFilm(filmRequestDto)), FilmResponseDto.class);
+        return convertToFilmRes.convert(filmService.update(filmMapper.mapToFilm(filmRequestDto)));
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -54,10 +55,28 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<FilmResponseDto> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        return this.filmService.getPopularFilms(count)
-                .stream()
-                .map(film -> conversionService.convert(film, FilmResponseDto.class))
-                .collect(Collectors.toList());
+    public Collection<FilmResponseDto> getPopularFilms(@RequestParam(defaultValue = "10") int count, @RequestParam Optional<Integer> genreId, @RequestParam Optional<Integer> year) {
+        return convertToFilmRes.getListResponse(filmService.getPopularFilms(count, genreId, year));
+    }
+
+    @GetMapping("/search")
+    public Collection<FilmResponseDto> searchFilms(@RequestParam String query, @RequestParam(name = "by") EnumSet<FilmSearchBy> filmSearchByList) {
+        return convertToFilmRes.getListResponse(filmService.searchFilms(query, filmSearchByList));
+    }
+
+    @GetMapping("/director/{directorId}")
+    public Collection<FilmResponseDto> getFilmDirectorFromCountLikeOrYear(@PathVariable int directorId, @RequestParam(name = "sortBy") DirectorSorted sorted) {
+        return convertToFilmRes.getListResponse(filmService.filmsDirectorSorted(directorId, sorted));
+    }
+
+    @DeleteMapping("/{filmId}")
+    public void delete(@PathVariable int filmId) {
+        filmService.delete(filmId);
+    }
+
+    @GetMapping("/common")
+    public Collection<FilmResponseDto> getCommonFilms(@RequestParam(name = "userId") int userId,
+                                                      @RequestParam(name = "friendId") int friendId) {
+        return convertToFilmRes.getListResponse(filmService.getCommonFilms(userId, friendId));
     }
 }

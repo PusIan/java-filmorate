@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.UserFilmLike;
 
 import java.util.List;
 
@@ -12,4 +13,6 @@ public interface UserStorage extends Storage<User> {
     void deleteFriendLink(int userId, int friendId);
 
     List<User> getFriends(int userId);
+
+    List<UserFilmLike> getUserFilmLikes();
 }
